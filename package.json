@@ -1,0 +1,17 @@
+{
+    "package": "nylon",
+    "devDependencies": {
+        "@napi-rs/cli": "^2.14.7"
+    },
+    "napi": {
+        "name": "nylon"
+    },
+    "scripts": {
+        "build": "napi build --release",
+        "build:debug": "napi build",
+        "dev:watch": "cargo watch -c -q -w src -w tests -w index.ts -s 'npm run build:debug && RUST_LOG=debug ts-node tests/server.ts'"
+    },
+    "dependencies": {
+        "@types/node": "^18.13.0"
+    }
+}

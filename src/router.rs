@@ -1,0 +1,60 @@
+use ahash::AHashMap;
+use napi::threadsafe_function::ThreadsafeFunction;
+
+pub type Next = Box<dyn Fn()>;
+pub type Handler = Vec<ThreadsafeFunction<()>>;
+// serde_json::Value, serde_json::Value
+
+pub struct RouterResult<'a> {
+    pub handlers: &'a Handler,
+    pub params: AHashMap<String, String>,
+}
+
+#[derive(Clone)]
+pub struct Router {
+    routes: matchit::Router<Handler>,
+}
+
+impl Router {
+    pub fn new() -> Router {
+        Router {
+            routes: matchit::Router::<Handler>::new(),
+        }
+    }
+
+    pub fn find<'a>(&'a self, path: &str, method: &str) -> Option<RouterResult> {
+        let find_path = format!("/{}{}", method, path);
+        let find_path = find_path.as_str();
+        // println!("Find: {}",find_path);
+        match self.routes.at(find_path) {
+            Ok(match_) => {
+                // println!("{:#?}", match_.params);
+                let params: AHashMap<String, String> = match_.params.iter().map(|(k, v)| (k.to_string(), v.to_string())).collect();
+                Some(RouterResult {
+                    handlers: match_.value,
+                    params,
+                })
+            }
+            Err(_) => {
+                let find_path = format!("/{}{}", "ALL", path);
+                let find_path = find_path.as_str();
+                match self.routes.at(find_path) {
+                    Ok(match_) => {
+                        let params: AHashMap<String, String> = match_.params.iter().map(|(k, v)| (k.to_string(), v.to_string())).collect();
+                        Some(RouterResult {
+                            handlers: match_.value,
+                            params,
+                        })
+                    }
+                    Err(_) => None,
+                }
+            }
+        }
+    }
+
+    pub fn delegate(&mut self, path: &str, handlers: Handler) -> Result<bool, matchit::InsertError> {
+        self.routes.insert(format!("{}", path), handlers)?;
+        Ok(true)
+    }
+
+}
