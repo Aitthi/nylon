@@ -1,12 +1,12 @@
 use ahash::AHashMap;
-use napi::threadsafe_function::ThreadsafeFunction;
+use napi::threadsafe_function::{ThreadsafeFunction, ErrorStrategy};
 
 pub type Next = Box<dyn Fn()>;
-pub type Handler = Vec<ThreadsafeFunction<()>>;
+pub type Handler = ThreadsafeFunction<(), ErrorStrategy::CalleeHandled>;
 // serde_json::Value, serde_json::Value
 
 pub struct RouterResult<'a> {
-    pub handlers: &'a Handler,
+    pub handler: &'a Handler,
     pub params: AHashMap<String, String>,
 }
 
@@ -31,7 +31,7 @@ impl Router {
                 // println!("{:#?}", match_.params);
                 let params: AHashMap<String, String> = match_.params.iter().map(|(k, v)| (k.to_string(), v.to_string())).collect();
                 Some(RouterResult {
-                    handlers: match_.value,
+                    handler: match_.value,
                     params,
                 })
             }
@@ -42,7 +42,7 @@ impl Router {
                     Ok(match_) => {
                         let params: AHashMap<String, String> = match_.params.iter().map(|(k, v)| (k.to_string(), v.to_string())).collect();
                         Some(RouterResult {
-                            handlers: match_.value,
+                            handler: match_.value,
                             params,
                         })
                     }
@@ -52,8 +52,8 @@ impl Router {
         }
     }
 
-    pub fn delegate(&mut self, path: &str, handlers: Handler) -> Result<bool, matchit::InsertError> {
-        self.routes.insert(format!("{}", path), handlers)?;
+    pub fn delegate(&mut self, path: &str, handler: Handler) -> Result<bool, matchit::InsertError> {
+        self.routes.insert(format!("{}", path), handler)?;
         Ok(true)
     }
 

@@ -5,12 +5,19 @@ import { Nylon, Logger } from './../index'
 async function main(){
 
     let app = new Nylon();
-
-    app.get("/", (req, res)=>{
-        return {
-            message: "TS 200 OK",
-            code: 200
-        }
+    let sleep = (ms: number) => new Promise((s,j)=>{
+        setTimeout(()=>s(true), ms)
+    })
+    app.get("/", async (req, res, next) => {
+        await sleep(3000)
+        next()
+    }, async (req, res, next) => {
+        res.header('server', 'Nylon/0.1.0')
+        next()
+    }, async (req, res)=>{
+        res.json({
+            message: "TS 200 OK"
+        })
     })
 
     await app.listen(3000, '0.0.0.0', () => {

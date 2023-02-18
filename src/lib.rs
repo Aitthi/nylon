@@ -1,14 +1,15 @@
 #[global_allocator]
 static GLOBAL: jemallocator::Jemalloc = jemallocator::Jemalloc;
 // mod
-pub mod router;
 pub mod logger;
+pub mod router;
 // use
 use futures_util::stream::TryStreamExt;
 use hyper::Server;
 use napi::bindgen_prelude::*;
 use napi::threadsafe_function::{ThreadsafeFunction, ThreadsafeFunctionCallMode};
 use napi_derive::napi;
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::net::SocketAddr;
 use std::time;
@@ -56,7 +57,16 @@ pub async fn listen(
     if let Err(e) = server.await {
         eprintln!("server error: {}", e);
     }
-    tokio::task::spawn(async{Ok(true)}).await.unwrap()
+    tokio::task::spawn(async { Ok(true) }).await.unwrap()
+}
+
+#[derive(Serialize, Deserialize)]
+struct JsResponse {
+    data: String,
+    headres: HashMap<String, String>,
+    res_code: u16,
+    is_json: bool,
+    json: serde_json::Value,
 }
 
 async fn process(
@@ -75,11 +85,41 @@ async fn process(
     let method = parts.method.clone();
     let mut builder = hyper::Response::builder();
     if let Some(route) = routes.find(path.path(), method.as_str()) {
-        builder = builder.status(200);
-        let handlers = route.handlers;
-        let msg: serde_json::Value = handlers.get(0).unwrap().call_async(Ok(())).await?;
-        let res = builder.body(hyper::Body::from(msg.to_string())).unwrap();
-        Ok(res)
+        let handler = route.handler;
+        // https://github.com/napi-rs/napi-rs/issues/1469
+        // 'Send Promise resolved value error'
+        match handler
+            .call_async::<Promise<serde_json::Value>>(Ok(()))
+            .await
+        {
+            Ok(js_promise) => match js_promise.await {
+                Ok(js_data) => {
+                    let js_res: JsResponse = serde_json::from_value(js_data).unwrap();
+                    builder = builder.status(js_res.res_code);
+                    let buf_array: Vec<u8>;
+                    if js_res.is_json {
+                        buf_array = serde_json::to_vec(&js_res.json).unwrap()
+                    } else {
+                        buf_array = js_res.data.as_bytes().to_vec();
+                    }
+                    for header in js_res.headres {
+                        builder = builder.header(header.0, header.1);
+                    }
+                    let res = builder.body(hyper::Body::from(buf_array)).unwrap();
+                    return Ok(res);
+                }
+                Err(e) => {
+                    builder = builder.status(500);
+                    let res = builder.body(hyper::Body::from(format!("{:?}", e))).unwrap();
+                    return Ok(res);
+                }
+            },
+            Err(e) => {
+                builder = builder.status(500);
+                let res = builder.body(hyper::Body::from(format!("{:?}", e))).unwrap();
+                return Ok(res);
+            }
+        }
     } else {
         builder = builder.status(404);
         let res = builder.body(hyper::Body::from("Not found")).unwrap();

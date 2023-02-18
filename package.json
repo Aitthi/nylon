@@ -1,5 +1,6 @@
 {
-    "package": "nylon",
+    "package": "@nylon/core",
+    "version": "0.1.0",
     "devDependencies": {
         "@napi-rs/cli": "^2.14.7"
     },
