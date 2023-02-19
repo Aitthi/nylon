@@ -22,7 +22,9 @@ async function main(){
 
     app.post("/hello/:name", async (req, res)=>{
         console.log('req', req)
-        return "hello 200 OK"
+        res.json({
+            message: `Hello, ${req.params.name}`
+        })
     })
 
     await app.listen(3000, '0.0.0.0', () => {

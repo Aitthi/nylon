@@ -78,8 +78,8 @@ export class Nylon {
             }
             if (!data_to_rs) data_to_rs = {
                 is_json: false,
-                json: null as SafeAny,
-                data: null as SafeAny,
+                json: {} as SafeAny,
+                data: "" as SafeAny,
                 res_code: 200,
                 headres: {
                     "Content-Type": "text/plain"
