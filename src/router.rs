@@ -34,20 +34,7 @@ impl Router {
                     params,
                 })
             }
-            Err(_) => {
-                let find_path = format!("/{}{}", "ALL", path);
-                let find_path = find_path.as_str();
-                match self.routes.at(find_path) {
-                    Ok(match_) => {
-                        let params: HashMap<String, String> = match_.params.iter().map(|(k, v)| (k.to_string(), v.to_string())).collect();
-                        Some(RouterResult {
-                            handler: match_.value,
-                            params,
-                        })
-                    }
-                    Err(_) => None,
-                }
-            }
+            Err(_) => None
         }
     }
 
