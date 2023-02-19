@@ -1,13 +1,12 @@
-use ahash::AHashMap;
+use std::collections::HashMap;
 use napi::threadsafe_function::{ThreadsafeFunction, ErrorStrategy};
 
 pub type Next = Box<dyn Fn()>;
-pub type Handler = ThreadsafeFunction<(), ErrorStrategy::CalleeHandled>;
-// serde_json::Value, serde_json::Value
+pub type Handler = ThreadsafeFunction<serde_json::Value, ErrorStrategy::CalleeHandled>;
 
 pub struct RouterResult<'a> {
     pub handler: &'a Handler,
-    pub params: AHashMap<String, String>,
+    pub params: HashMap<String, String>,
 }
 
 #[derive(Clone)]
@@ -29,7 +28,7 @@ impl Router {
         match self.routes.at(find_path) {
             Ok(match_) => {
                 // println!("{:#?}", match_.params);
-                let params: AHashMap<String, String> = match_.params.iter().map(|(k, v)| (k.to_string(), v.to_string())).collect();
+                let params: HashMap<String, String> = match_.params.iter().map(|(k, v)| (k.to_string(), v.to_string())).collect();
                 Some(RouterResult {
                     handler: match_.value,
                     params,
@@ -40,7 +39,7 @@ impl Router {
                 let find_path = find_path.as_str();
                 match self.routes.at(find_path) {
                     Ok(match_) => {
-                        let params: AHashMap<String, String> = match_.params.iter().map(|(k, v)| (k.to_string(), v.to_string())).collect();
+                        let params: HashMap<String, String> = match_.params.iter().map(|(k, v)| (k.to_string(), v.to_string())).collect();
                         Some(RouterResult {
                             handler: match_.value,
                             params,

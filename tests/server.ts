@@ -9,7 +9,7 @@ async function main(){
         setTimeout(()=>s(true), ms)
     })
     app.get("/", async (req, res, next) => {
-        await sleep(3000)
+        // await sleep(3000)
         next()
     }, async (req, res, next) => {
         res.header('server', 'Nylon/0.1.0')
@@ -18,6 +18,11 @@ async function main(){
         res.json({
             message: "TS 200 OK"
         })
+    })
+
+    app.post("/hello/:name", async (req, res)=>{
+        console.log('req', req)
+        return "hello 200 OK"
     })
 
     await app.listen(3000, '0.0.0.0', () => {

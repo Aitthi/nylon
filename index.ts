@@ -33,7 +33,7 @@ export interface Request {
         [key: string]: string
     },
     body: {
-        buffer: ArrayBuffer
+        buffer: Buffer
         json?: SafeAny
     }
 }
@@ -52,12 +52,15 @@ export interface Response {
     text: (data: SafeAny) => void
     html: (data: SafeAny) => void
     send: (data: SafeAny) => void
-    header: (key: string, value: string) => void
+    header: (key: string, value: string) => void,
+    headres:  {
+        [key: string]: string
+    }
 }
 export class Nylon {
 
     private routes: {
-        [key: string]: (req: Request, data_to_rs: any, handler_index: number) => Promise<SafeAny>
+        [key: string]: (_: null, req: Request, data_to_rs: any, handler_index: number) => Promise<SafeAny>
     } = {}
 
     constructor() { }
@@ -68,7 +71,11 @@ export class Nylon {
 
     private delegate(path: string, method: Method, handlers: Handler[]) {
         let path_name = `/${method}${path ? path : '/'}`
-        let handler = async (req: SafeAny, data_to_rs: any, handler_index = 0) => {
+        let handler = async (_: null, request: Request, data_to_rs: any, handler_index = 0) => {
+            if(!handler_index) {
+                // Vec<u8> to js Buffer
+                request.body.buffer = Buffer.from(request.body.buffer)
+            }
             if (!data_to_rs) data_to_rs = {
                 is_json: false,
                 json: null as SafeAny,
@@ -106,12 +113,13 @@ export class Nylon {
                 },
                 header(key, value) {
                     data_to_rs.headres[key] = value
-                }
+                },
+                headres: data_to_rs.headres
             }
             let is_next = false
-            await handlers[handler_index || 0](req, res, () => is_next = true)
+            await handlers[handler_index || 0](request, res, () => is_next = true)
             if (is_next) {
-                await handler(req,data_to_rs,handler_index += 1)
+                await handler(_,request, data_to_rs, handler_index += 1)
             }
             return data_to_rs
         }
@@ -122,4 +130,47 @@ export class Nylon {
         this.delegate(path, Method.Get, handler)
     }
 
+    post(path: string, ...handler: Handler[]) {
+        this.delegate(path, Method.Post, handler)
+    }
+
+    put(path: string, ...handler: Handler[]) {
+        this.delegate(path, Method.Put, handler)
+    }
+
+    delete(path: string, ...handler: Handler[]) {
+        this.delegate(path, Method.Delete, handler)
+    }
+
+    patch(path: string, ...handler: Handler[]) {
+        this.delegate(path, Method.Patch, handler)
+    }
+
+    head(path: string, ...handler: Handler[]) {
+        this.delegate(path, Method.Head, handler)
+    }
+
+    options(path: string, ...handler: Handler[]) {
+        this.delegate(path, Method.Options, handler)
+    }
+
+    trace(path: string, ...handler: Handler[]) {
+        this.delegate(path, Method.Trace, handler)
+    }
+
+    connect(path: string, ...handler: Handler[]) {
+        this.delegate(path, Method.Connect, handler)
+    }
+
+    all(path: string, ...handler: Handler[]) {
+        this.delegate(path, Method.Get, handler)
+        this.delegate(path, Method.Post, handler)
+        this.delegate(path, Method.Put, handler)
+        this.delegate(path, Method.Delete, handler)
+        this.delegate(path, Method.Patch, handler)
+        this.delegate(path, Method.Head, handler)
+        this.delegate(path, Method.Options, handler)
+        this.delegate(path, Method.Trace, handler)
+        this.delegate(path, Method.Connect, handler)
+    }
 }
