@@ -60,7 +60,7 @@ pub async fn listen(
     tokio::task::spawn(async { Ok(true) }).await.unwrap()
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 struct JsResponse {
     data: String,
     headres: HashMap<String, String>,
@@ -69,7 +69,7 @@ struct JsResponse {
     json: serde_json::Value,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct JsRequestBody {
     pub buffer: Vec<u8>,
     pub json: serde_json::Value,
