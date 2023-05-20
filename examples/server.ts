@@ -4,12 +4,8 @@ import { Nylon, Logger } from './../index'
 
 async function main() {
   const app = new Nylon()
-  // let sleep = (ms: number) => new Promise((s, j) => {
-  //     setTimeout(() => s(true), ms)
-  // })
-
+  
   app.get('/', async () => {
-    // console.info('req', ctx.request)
     return {
       headers: {
         'Content-Type': 'text/plain',
