@@ -106,19 +106,5 @@
     "trailingComma": "all",
     "singleQuote": true,
     "arrowParens": "always"
-  },
-  "packageManager": "yarn@3.5.1",
-  "optionalDependencies": {
-    "nylon-rs-win32-x64-msvc": "1.0.1",
-    "nylon-rs-darwin-x64": "1.0.1",
-    "nylon-rs-linux-x64-gnu": "1.0.1",
-    "nylon-rs-linux-x64-musl": "1.0.1",
-    "nylon-rs-linux-arm64-gnu": "1.0.1",
-    "nylon-rs-win32-ia32-msvc": "1.0.1",
-    "nylon-rs-linux-arm-gnueabihf": "1.0.1",
-    "nylon-rs-darwin-arm64": "1.0.1",
-    "nylon-rs-freebsd-x64": "1.0.1",
-    "nylon-rs-linux-arm64-musl": "1.0.1",
-    "nylon-rs-win32-arm64-msvc": "1.0.1"
   }
 }
