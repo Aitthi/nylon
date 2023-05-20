@@ -1,0 +1,32 @@
+{
+  "name": "nylon-rs-linux-arm-gnueabihf",
+  "version": "1.0.3",
+  "os": [
+    "linux"
+  ],
+  "cpu": [
+    "arm"
+  ],
+  "main": "nylon-rs.linux-arm-gnueabihf.node",
+  "files": [
+    "nylon-rs.linux-arm-gnueabihf.node"
+  ],
+  "description": "Nylon is a web framework for Node.js built with Tokio, Tower, Hyper, and Napi-rs",
+  "keywords": [
+    "napi-rs",
+    "NAPI",
+    "N-API",
+    "Rust",
+    "node-addon",
+    "node-addon-api"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">= 10"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  },
+  "repository": "https://github.com/Aitthi/nylon"
+}
