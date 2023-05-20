@@ -13,7 +13,7 @@ env:
   node: true
   jest: true
 
-ignorePatterns: ['index.js', "index.d.ts", "examples/**/*"]
+ignorePatterns: ['index.js', "index.d.ts", "examples/**/*", "nylon-node.js"]
 
 plugins:
   - import
