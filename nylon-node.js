@@ -32,24 +32,24 @@ switch (platform) {
   case 'android':
     switch (arch) {
       case 'arm64':
-        localFileExisted = existsSync(join(__dirname, 'nylon.android-arm64.node'))
+        localFileExisted = existsSync(join(__dirname, 'nylon-rs.android-arm64.node'))
         try {
           if (localFileExisted) {
-            nativeBinding = require('./nylon.android-arm64.node')
+            nativeBinding = require('./nylon-rs.android-arm64.node')
           } else {
-            nativeBinding = require('nylon-android-arm64')
+            nativeBinding = require('nylon-rs-android-arm64')
           }
         } catch (e) {
           loadError = e
         }
         break
       case 'arm':
-        localFileExisted = existsSync(join(__dirname, 'nylon.android-arm-eabi.node'))
+        localFileExisted = existsSync(join(__dirname, 'nylon-rs.android-arm-eabi.node'))
         try {
           if (localFileExisted) {
-            nativeBinding = require('./nylon.android-arm-eabi.node')
+            nativeBinding = require('./nylon-rs.android-arm-eabi.node')
           } else {
-            nativeBinding = require('nylon-android-arm-eabi')
+            nativeBinding = require('nylon-rs-android-arm-eabi')
           }
         } catch (e) {
           loadError = e
@@ -62,36 +62,36 @@ switch (platform) {
   case 'win32':
     switch (arch) {
       case 'x64':
-        localFileExisted = existsSync(join(__dirname, 'nylon.win32-x64-msvc.node'))
+        localFileExisted = existsSync(join(__dirname, 'nylon-rs.win32-x64-msvc.node'))
         try {
           if (localFileExisted) {
-            nativeBinding = require('./nylon.win32-x64-msvc.node')
+            nativeBinding = require('./nylon-rs.win32-x64-msvc.node')
           } else {
-            nativeBinding = require('nylon-win32-x64-msvc')
+            nativeBinding = require('nylon-rs-win32-x64-msvc')
           }
         } catch (e) {
           loadError = e
         }
         break
       case 'ia32':
-        localFileExisted = existsSync(join(__dirname, 'nylon.win32-ia32-msvc.node'))
+        localFileExisted = existsSync(join(__dirname, 'nylon-rs.win32-ia32-msvc.node'))
         try {
           if (localFileExisted) {
-            nativeBinding = require('./nylon.win32-ia32-msvc.node')
+            nativeBinding = require('./nylon-rs.win32-ia32-msvc.node')
           } else {
-            nativeBinding = require('nylon-win32-ia32-msvc')
+            nativeBinding = require('nylon-rs-win32-ia32-msvc')
           }
         } catch (e) {
           loadError = e
         }
         break
       case 'arm64':
-        localFileExisted = existsSync(join(__dirname, 'nylon.win32-arm64-msvc.node'))
+        localFileExisted = existsSync(join(__dirname, 'nylon-rs.win32-arm64-msvc.node'))
         try {
           if (localFileExisted) {
-            nativeBinding = require('./nylon.win32-arm64-msvc.node')
+            nativeBinding = require('./nylon-rs.win32-arm64-msvc.node')
           } else {
-            nativeBinding = require('nylon-win32-arm64-msvc')
+            nativeBinding = require('nylon-rs-win32-arm64-msvc')
           }
         } catch (e) {
           loadError = e
@@ -102,35 +102,35 @@ switch (platform) {
     }
     break
   case 'darwin':
-    localFileExisted = existsSync(join(__dirname, 'nylon.darwin-universal.node'))
+    localFileExisted = existsSync(join(__dirname, 'nylon-rs.darwin-universal.node'))
     try {
       if (localFileExisted) {
-        nativeBinding = require('./nylon.darwin-universal.node')
+        nativeBinding = require('./nylon-rs.darwin-universal.node')
       } else {
-        nativeBinding = require('nylon-darwin-universal')
+        nativeBinding = require('nylon-rs-darwin-universal')
       }
       break
     } catch {}
     switch (arch) {
       case 'x64':
-        localFileExisted = existsSync(join(__dirname, 'nylon.darwin-x64.node'))
+        localFileExisted = existsSync(join(__dirname, 'nylon-rs.darwin-x64.node'))
         try {
           if (localFileExisted) {
-            nativeBinding = require('./nylon.darwin-x64.node')
+            nativeBinding = require('./nylon-rs.darwin-x64.node')
           } else {
-            nativeBinding = require('nylon-darwin-x64')
+            nativeBinding = require('nylon-rs-darwin-x64')
           }
         } catch (e) {
           loadError = e
         }
         break
       case 'arm64':
-        localFileExisted = existsSync(join(__dirname, 'nylon.darwin-arm64.node'))
+        localFileExisted = existsSync(join(__dirname, 'nylon-rs.darwin-arm64.node'))
         try {
           if (localFileExisted) {
-            nativeBinding = require('./nylon.darwin-arm64.node')
+            nativeBinding = require('./nylon-rs.darwin-arm64.node')
           } else {
-            nativeBinding = require('nylon-darwin-arm64')
+            nativeBinding = require('nylon-rs-darwin-arm64')
           }
         } catch (e) {
           loadError = e
@@ -144,12 +144,12 @@ switch (platform) {
     if (arch !== 'x64') {
       throw new Error(`Unsupported architecture on FreeBSD: ${arch}`)
     }
-    localFileExisted = existsSync(join(__dirname, 'nylon.freebsd-x64.node'))
+    localFileExisted = existsSync(join(__dirname, 'nylon-rs.freebsd-x64.node'))
     try {
       if (localFileExisted) {
-        nativeBinding = require('./nylon.freebsd-x64.node')
+        nativeBinding = require('./nylon-rs.freebsd-x64.node')
       } else {
-        nativeBinding = require('nylon-freebsd-x64')
+        nativeBinding = require('nylon-rs-freebsd-x64')
       }
     } catch (e) {
       loadError = e
@@ -159,23 +159,23 @@ switch (platform) {
     switch (arch) {
       case 'x64':
         if (isMusl()) {
-          localFileExisted = existsSync(join(__dirname, 'nylon.linux-x64-musl.node'))
+          localFileExisted = existsSync(join(__dirname, 'nylon-rs.linux-x64-musl.node'))
           try {
             if (localFileExisted) {
-              nativeBinding = require('./nylon.linux-x64-musl.node')
+              nativeBinding = require('./nylon-rs.linux-x64-musl.node')
             } else {
-              nativeBinding = require('nylon-linux-x64-musl')
+              nativeBinding = require('nylon-rs-linux-x64-musl')
             }
           } catch (e) {
             loadError = e
           }
         } else {
-          localFileExisted = existsSync(join(__dirname, 'nylon.linux-x64-gnu.node'))
+          localFileExisted = existsSync(join(__dirname, 'nylon-rs.linux-x64-gnu.node'))
           try {
             if (localFileExisted) {
-              nativeBinding = require('./nylon.linux-x64-gnu.node')
+              nativeBinding = require('./nylon-rs.linux-x64-gnu.node')
             } else {
-              nativeBinding = require('nylon-linux-x64-gnu')
+              nativeBinding = require('nylon-rs-linux-x64-gnu')
             }
           } catch (e) {
             loadError = e
@@ -184,23 +184,23 @@ switch (platform) {
         break
       case 'arm64':
         if (isMusl()) {
-          localFileExisted = existsSync(join(__dirname, 'nylon.linux-arm64-musl.node'))
+          localFileExisted = existsSync(join(__dirname, 'nylon-rs.linux-arm64-musl.node'))
           try {
             if (localFileExisted) {
-              nativeBinding = require('./nylon.linux-arm64-musl.node')
+              nativeBinding = require('./nylon-rs.linux-arm64-musl.node')
             } else {
-              nativeBinding = require('nylon-linux-arm64-musl')
+              nativeBinding = require('nylon-rs-linux-arm64-musl')
             }
           } catch (e) {
             loadError = e
           }
         } else {
-          localFileExisted = existsSync(join(__dirname, 'nylon.linux-arm64-gnu.node'))
+          localFileExisted = existsSync(join(__dirname, 'nylon-rs.linux-arm64-gnu.node'))
           try {
             if (localFileExisted) {
-              nativeBinding = require('./nylon.linux-arm64-gnu.node')
+              nativeBinding = require('./nylon-rs.linux-arm64-gnu.node')
             } else {
-              nativeBinding = require('nylon-linux-arm64-gnu')
+              nativeBinding = require('nylon-rs-linux-arm64-gnu')
             }
           } catch (e) {
             loadError = e
@@ -208,12 +208,12 @@ switch (platform) {
         }
         break
       case 'arm':
-        localFileExisted = existsSync(join(__dirname, 'nylon.linux-arm-gnueabihf.node'))
+        localFileExisted = existsSync(join(__dirname, 'nylon-rs.linux-arm-gnueabihf.node'))
         try {
           if (localFileExisted) {
-            nativeBinding = require('./nylon.linux-arm-gnueabihf.node')
+            nativeBinding = require('./nylon-rs.linux-arm-gnueabihf.node')
           } else {
-            nativeBinding = require('nylon-linux-arm-gnueabihf')
+            nativeBinding = require('nylon-rs-linux-arm-gnueabihf')
           }
         } catch (e) {
           loadError = e

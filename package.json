@@ -1,6 +1,6 @@
 {
-  "name": "nylon",
-  "version": "1.0.0",
+  "name": "nylon-rs",
+  "version": "1.0.1",
   "description": "Nylon is a web framework for Node.js built with Tokio, Tower, Hyper, and Napi-rs",
   "main": "index.ts",
   "repository": "https://github.com/Aitthi/nylon",
@@ -18,7 +18,7 @@
     "nylon-node.js"
   ],
   "napi": {
-    "name": "nylon",
+    "name": "nylon-rs",
     "triples": {
       "defaults": true,
       "additional": [
@@ -27,11 +27,9 @@
         "i686-pc-windows-msvc",
         "armv7-unknown-linux-gnueabihf",
         "aarch64-apple-darwin",
-        "aarch64-linux-android",
         "x86_64-unknown-freebsd",
         "aarch64-unknown-linux-musl",
-        "aarch64-pc-windows-msvc",
-        "armv7-linux-androideabi"
+        "aarch64-pc-windows-msvc"
       ]
     }
   },
@@ -45,8 +43,8 @@
   "scripts": {
     "artifacts": "napi artifacts",
     "bench": "node -r @swc-node/register benchmark/bench.ts",
-    "build": "napi build --platform --release --platform --js=nylon-node.js --no-dts-header --pipe \"prettier -w\"",
-    "build:debug": "napi build --platform --js=nylon-node.js --no-dts-header --pipe \"prettier -w\"",
+    "build": "napi build --platform --release --platform --js=nylon-node.js --pipe \"prettier -w\"",
+    "build:debug": "napi build --platform --js=nylon-node.js --pipe \"prettier -w\"",
     "format": "run-p format:prettier format:rs format:toml",
     "format:prettier": "prettier . -w",
     "format:toml": "taplo format",
@@ -111,18 +109,16 @@
   },
   "packageManager": "yarn@3.5.1",
   "optionalDependencies": {
-    "nylon-win32-x64-msvc": "1.0.0",
-    "nylon-darwin-x64": "1.0.0",
-    "nylon-linux-x64-gnu": "1.0.0",
-    "nylon-linux-x64-musl": "1.0.0",
-    "nylon-linux-arm64-gnu": "1.0.0",
-    "nylon-win32-ia32-msvc": "1.0.0",
-    "nylon-linux-arm-gnueabihf": "1.0.0",
-    "nylon-darwin-arm64": "1.0.0",
-    "nylon-android-arm64": "1.0.0",
-    "nylon-freebsd-x64": "1.0.0",
-    "nylon-linux-arm64-musl": "1.0.0",
-    "nylon-win32-arm64-msvc": "1.0.0",
-    "nylon-android-arm-eabi": "1.0.0"
+    "nylon-rs-win32-x64-msvc": "1.0.1",
+    "nylon-rs-darwin-x64": "1.0.1",
+    "nylon-rs-linux-x64-gnu": "1.0.1",
+    "nylon-rs-linux-x64-musl": "1.0.1",
+    "nylon-rs-linux-arm64-gnu": "1.0.1",
+    "nylon-rs-win32-ia32-msvc": "1.0.1",
+    "nylon-rs-linux-arm-gnueabihf": "1.0.1",
+    "nylon-rs-darwin-arm64": "1.0.1",
+    "nylon-rs-freebsd-x64": "1.0.1",
+    "nylon-rs-linux-arm64-musl": "1.0.1",
+    "nylon-rs-win32-arm64-msvc": "1.0.1"
   }
 }

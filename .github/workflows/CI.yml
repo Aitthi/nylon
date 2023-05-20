@@ -1,7 +1,7 @@
 name: CI
 env:
   DEBUG: napi:*
-  APP_NAME: nylon
+  APP_NAME: nylon-rs
   MACOSX_DEPLOYMENT_TARGET: '10.13'
 'on':
   push:
