@@ -1,6 +1,6 @@
 {
   "name": "nylon-rs",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Nylon is a web framework for Node.js built with Tokio, Tower, Hyper, and Napi-rs",
   "main": "index.ts",
   "repository": "https://github.com/Aitthi/nylon",
@@ -26,8 +26,7 @@
         "aarch64-unknown-linux-gnu",
         "armv7-unknown-linux-gnueabihf",
         "aarch64-apple-darwin",
-        "aarch64-unknown-linux-musl",
-        "aarch64-pc-windows-msvc"
+        "aarch64-unknown-linux-musl"
       ]
     }
   },
@@ -106,14 +105,13 @@
     "arrowParens": "always"
   },
   "optionalDependencies": {
-    "nylon-rs-win32-x64-msvc": "1.0.3",
-    "nylon-rs-darwin-x64": "1.0.3",
-    "nylon-rs-linux-x64-gnu": "1.0.3",
-    "nylon-rs-linux-x64-musl": "1.0.3",
-    "nylon-rs-linux-arm64-gnu": "1.0.3",
-    "nylon-rs-linux-arm-gnueabihf": "1.0.3",
-    "nylon-rs-darwin-arm64": "1.0.3",
-    "nylon-rs-linux-arm64-musl": "1.0.3",
-    "nylon-rs-win32-arm64-msvc": "1.0.3"
+    "nylon-rs-win32-x64-msvc": "1.0.4",
+    "nylon-rs-darwin-x64": "1.0.4",
+    "nylon-rs-linux-x64-gnu": "1.0.4",
+    "nylon-rs-linux-x64-musl": "1.0.4",
+    "nylon-rs-linux-arm64-gnu": "1.0.4",
+    "nylon-rs-linux-arm-gnueabihf": "1.0.4",
+    "nylon-rs-darwin-arm64": "1.0.4",
+    "nylon-rs-linux-arm64-musl": "1.0.4"
   }
 }
