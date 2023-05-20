@@ -109,5 +109,20 @@
     "singleQuote": true,
     "arrowParens": "always"
   },
-  "packageManager": "yarn@3.5.1"
+  "packageManager": "yarn@3.5.1",
+  "optionalDependencies": {
+    "nylon-win32-x64-msvc": "1.0.0",
+    "nylon-darwin-x64": "1.0.0",
+    "nylon-linux-x64-gnu": "1.0.0",
+    "nylon-linux-x64-musl": "1.0.0",
+    "nylon-linux-arm64-gnu": "1.0.0",
+    "nylon-win32-ia32-msvc": "1.0.0",
+    "nylon-linux-arm-gnueabihf": "1.0.0",
+    "nylon-darwin-arm64": "1.0.0",
+    "nylon-android-arm64": "1.0.0",
+    "nylon-freebsd-x64": "1.0.0",
+    "nylon-linux-arm64-musl": "1.0.0",
+    "nylon-win32-arm64-msvc": "1.0.0",
+    "nylon-android-arm-eabi": "1.0.0"
+  }
 }
