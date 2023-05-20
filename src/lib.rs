@@ -1,5 +1,3 @@
-#[global_allocator]
-static GLOBAL: jemallocator::Jemalloc = jemallocator::Jemalloc;
 // mod
 pub mod logger;
 pub mod router;
