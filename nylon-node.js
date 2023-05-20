@@ -234,9 +234,8 @@ if (!nativeBinding) {
   throw new Error(`Failed to load native binding`)
 }
 
-const { info, debug, listean, listen } = nativeBinding
+const { info, debug, listen } = nativeBinding
 
 module.exports.info = info
 module.exports.debug = debug
-module.exports.listean = listean
 module.exports.listen = listen
