@@ -8,8 +8,9 @@
     "noUnusedParameters": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "types": ["node"]
+    "types": ["node"],
+    "declaration": true
   },
-  "include": ["."],
+  "include": ["index.ts"],
   "exclude": ["node_modules"]
 }

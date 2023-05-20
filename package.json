@@ -1,8 +1,8 @@
 {
   "name": "nylon-rs",
-  "version": "1.0.4",
+  "version": "1.0.6",
   "description": "Nylon is a web framework for Node.js built with Tokio, Tower, Hyper, and Napi-rs",
-  "main": "index.ts",
+  "main": "index.js",
   "repository": "https://github.com/Aitthi/nylon",
   "license": "MIT",
   "keywords": [
@@ -15,7 +15,8 @@
   ],
   "files": [
     "index.d.ts",
-    "nylon-node.js"
+    "nylon-node.js",
+    "index.js"
   ],
   "napi": {
     "name": "nylon-rs",
@@ -47,7 +48,7 @@
     "format:toml": "taplo format",
     "format:rs": "cargo fmt",
     "lint": "eslint . -c ./.eslintrc.yml",
-    "prepublishOnly": "napi prepublish -t npm",
+    "prepublishOnly": "tsc && napi prepublish -t npm",
     "test": "ava",
     "version": "napi version",
     "dev:watch": "cargo watch -c -q -w src -w index.ts -w examples -s 'npm run build:debug && RUST_LOG=debug ts-node examples/server.ts'"
@@ -105,13 +106,13 @@
     "arrowParens": "always"
   },
   "optionalDependencies": {
-    "nylon-rs-win32-x64-msvc": "1.0.4",
-    "nylon-rs-darwin-x64": "1.0.4",
-    "nylon-rs-linux-x64-gnu": "1.0.4",
-    "nylon-rs-linux-x64-musl": "1.0.4",
-    "nylon-rs-linux-arm64-gnu": "1.0.4",
-    "nylon-rs-linux-arm-gnueabihf": "1.0.4",
-    "nylon-rs-darwin-arm64": "1.0.4",
-    "nylon-rs-linux-arm64-musl": "1.0.4"
+    "nylon-rs-win32-x64-msvc": "1.0.6",
+    "nylon-rs-darwin-x64": "1.0.6",
+    "nylon-rs-linux-x64-gnu": "1.0.6",
+    "nylon-rs-linux-x64-musl": "1.0.6",
+    "nylon-rs-linux-arm64-gnu": "1.0.6",
+    "nylon-rs-linux-arm-gnueabihf": "1.0.6",
+    "nylon-rs-darwin-arm64": "1.0.6",
+    "nylon-rs-linux-arm64-musl": "1.0.6"
   }
 }
