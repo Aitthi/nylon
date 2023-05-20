@@ -1,6 +1,6 @@
 {
   "name": "nylon-rs",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Nylon is a web framework for Node.js built with Tokio, Tower, Hyper, and Napi-rs",
   "main": "index.ts",
   "repository": "https://github.com/Aitthi/nylon",
@@ -24,10 +24,8 @@
       "additional": [
         "x86_64-unknown-linux-musl",
         "aarch64-unknown-linux-gnu",
-        "i686-pc-windows-msvc",
         "armv7-unknown-linux-gnueabihf",
         "aarch64-apple-darwin",
-        "x86_64-unknown-freebsd",
         "aarch64-unknown-linux-musl",
         "aarch64-pc-windows-msvc"
       ]
