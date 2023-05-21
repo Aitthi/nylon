@@ -28,7 +28,7 @@ jobs:
           - host: macos-latest
             target: x86_64-apple-darwin
             build: |
-              yarn build --js=nylon-node.js
+              yarn build
               strip -x *.node
           - host: ubuntu-latest
             target: x86_64-unknown-linux-gnu
@@ -127,12 +127,6 @@ jobs:
         with:
           name: bindings-${{ matrix.settings.target }}
           path: ${{ env.APP_NAME }}.*.node
-          if-no-files-found: error
-      - name: Upload nylon-node
-        uses: actions/upload-artifact@v3
-        with:
-          name: bindings-${{ matrix.settings.target }}
-          path: nylon-node.js
           if-no-files-found: error
   publish:
     name: Publish
