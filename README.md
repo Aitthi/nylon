@@ -18,7 +18,20 @@ yarn add nylon-rs
 
 ## Usage
 
+edit tsconfig.json
+```json
+{
+  "compilerOptions": {
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    ....
+  }
+}
+```
+
 ```ts
+import * as os from 'os'
+import { getHeapStatistics } from 'v8'
 import { NylonFactory } from 'nylon-rs/core'
 import { Module, Controller, Get } from 'nylon-rs/common'
 import { Tracing, TracingOptions } from 'nylon-rs/tracing'
