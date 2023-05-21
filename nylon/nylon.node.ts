@@ -1,3 +1,5 @@
+import 'reflect-metadata'
+
 const NylonBin = require('./../nylon-node.js') as {
   listen: (
     port: number,

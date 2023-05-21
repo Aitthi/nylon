@@ -8,10 +8,19 @@
     "noUnusedParameters": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "types": ["node"],
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "types": [
+      "node"
+    ],
     "declaration": true,
-    "outDir": "dist"
+    "outDir": "dist",
   },
-  "include": ["index.ts"],
-  "exclude": ["node_modules"]
+  "include": [
+    "index.ts",
+    "nylon/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

@@ -1,28 +1,10 @@
-# Nylon Experimental
-
-[![NPM version](https://img.shields.io/npm/v/nylon-rs.svg?style=for-the-badge)](https://www.npmjs.com/package/nylon-rs)
-
-Nylon is a web framework for Node.js built with Tokio, Tower, Hyper, and Napi-rs
-
-
-## Installation
-
-```bash
-npm install nylon-rs
-```
-or
-```bash
-yarn add nylon-rs
-```
-
-
-## Usage
-
-```ts
-import { NylonFactory } from 'nylon-rs/core'
-import { Module, Controller, Get } from 'nylon-rs/common'
-import { Tracing, TracingOptions } from 'nylon-rs/tracing'
-import { Context } from 'nylon-rs/types'
+import * as os from 'os'
+import { getHeapStatistics } from 'v8'
+// // nylon-rs
+import { NylonFactory } from '../nylon/core'
+import { Module, Controller, Get } from '../nylon/common'
+import { Tracing, TracingOptions } from '../nylon/tracing'
+import { Context } from '../nylon/types'
 
 @Controller()
 export class MainController {
@@ -65,4 +47,3 @@ async function bootstrap() {
 }
 
 bootstrap().finally(() => {})
-```
