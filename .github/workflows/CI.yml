@@ -28,7 +28,7 @@ jobs:
           - host: macos-latest
             target: x86_64-apple-darwin
             build: |
-              yarn build
+              yarn build --js=nylon-node.js
               strip -x *.node
           - host: ubuntu-latest
             target: x86_64-unknown-linux-gnu
