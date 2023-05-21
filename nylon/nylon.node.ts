@@ -15,6 +15,9 @@ const NylonBin = require(localFile) as {
   ) => Promise<void>
   info: (message: string) => void
   debug: (message: string) => void
+  error: (message: string) => void
+  warn: (message: string) => void
+  trace: (message: string) => void
 }
 
 export const NylonNode = {
@@ -22,5 +25,8 @@ export const NylonNode = {
   logger: {
     info: NylonBin.info,
     debug: NylonBin.debug,
+    error: NylonBin.error,
+    warn: NylonBin.warn,
+    trace: NylonBin.trace,
   },
 }

@@ -10,4 +10,13 @@ export const Tracing = {
   debug(...args: SafeAny[]) {
     return NylonNode.logger.debug(args.join(' '))
   },
+  error(...args: SafeAny[]) {
+    return NylonNode.logger.error(args.join(' '))
+  },
+  warn(...args: SafeAny[]) {
+    return NylonNode.logger.warn(args.join(' '))
+  },
+  trace(...args: SafeAny[]) {
+    return NylonNode.logger.trace(args.join(' '))
+  },
 }

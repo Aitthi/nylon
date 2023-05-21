@@ -1,15 +1,29 @@
+import { Response } from '../types'
+import { argsMetadataKey } from './args'
+
 function delegate(method: string) {
   return function (path?: string) {
-    return function (target: any, _: string, descriptor: PropertyDescriptor) {
+    return function (target: any, propertyName: string, descriptor: PropertyDescriptor) {
       let methods = Reflect.getMetadata('methods', target)
       if (!methods) {
         methods = []
       }
       path = `${method}/${path ?? ''}`
+      const args = Reflect.getOwnMetadata(argsMetadataKey, target, propertyName)
+      const response: Response = Reflect.getOwnMetadata('response', target) ?? {
+        is_end: false,
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: null,
+      }
       methods.push({
         method,
         path,
         descriptor,
+        args,
+        response,
       })
       Reflect.defineMetadata('methods', methods, target)
     }

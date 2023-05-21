@@ -1,5 +1,5 @@
 import { NylonNode } from '../nylon.node'
-import { Context, Handler, NylonOptions, SafeAny } from '../types'
+import { Handler, NylonOptions, Request, Response, SafeAny } from '../types'
 
 export class NylonFactoryStatic {
   private routes: {
@@ -30,15 +30,35 @@ export class NylonFactoryStatic {
         method: string
         path: string
         descriptor: PropertyDescriptor
+        args: {
+          type: 'params' | 'query'
+          value: string
+        }[]
+        response: Response
       }[]
       if (!methods) methods = []
       methods.forEach((method) => {
         const handlers = [] as Handler[]
-        const handler = async (ctx: Context) => {
+        let request = {} as SafeAny
+        const handler = async (req: Request) => {
+          request = {
+            ...request,
+            ...req,
+          }
+          const args = [] as SafeAny[]
           const instance = method.descriptor.value.bind(controller)
-          const rs = await instance(ctx)
+          if (method.args) {
+            method.args.forEach((arg) => {
+              if (arg.type === 'params') {
+                args.push(request.params[arg.value])
+              } else if (arg.type === 'query') {
+                args.push(request.query[arg.value])
+              }
+            })
+          }
+          const rs = await instance(...args)
           return {
-            ...ctx.response,
+            ...method.response,
             body: rs,
           }
         }

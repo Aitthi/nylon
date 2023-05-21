@@ -2,9 +2,8 @@ import * as os from 'os'
 import { getHeapStatistics } from 'v8'
 // // nylon-rs
 import { NylonFactory } from '../nylon/core'
-import { Module, Controller, Get } from '../nylon/common'
+import { Module, Controller, Get, Params, Query } from '../nylon/common'
 import { Tracing, TracingOptions } from '../nylon/tracing'
-import { Context } from '../nylon/types'
 
 @Controller()
 export class MainController {
@@ -18,9 +17,12 @@ export class MainController {
 
 
   @Get('hello/:name')
-  async hello(ctx: Context) {
+  async hello(
+    @Params('name') name: string,
+    @Query('age') age: number,
+  ) {
     return {
-      message: `Hello ${ctx.request.params.name}!`
+      message: `Hello ${name}! You are ${age || 1} years old.`
     }
   }
 

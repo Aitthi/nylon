@@ -1,4 +1,5 @@
 export * from './module'
 export * from './controller'
-// methods
 export * from './methods'
+export * from './params'
+export * from './query'

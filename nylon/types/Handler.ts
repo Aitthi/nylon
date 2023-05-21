@@ -1,7 +1,7 @@
-import { Context } from './Context'
+import { Request } from './Request'
 import { SafeAny } from './SafeAny'
 
-export type Handler = (ctx: Context) => Promise<{
+export type Handler = (req: Request) => Promise<{
   is_end?: boolean
   status?: number
   headers?: {
