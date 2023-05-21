@@ -64,7 +64,7 @@ async function main() {
   )
 
   await app.listen(3000, '0.0.0.0', () => {
-    Logger.info(process.pid + ' is alive!', 'Worker')
+    Logger.info('Worker',process.pid + ' is alive!')
     Logger.info('HOST_NAME', os.hostname())
     Logger.info('Platform', os.platform())
     Logger.info('Node Heap size limit', `${getHeapStatistics().heap_size_limit / (1024 * 1024)} Mb`)
