@@ -9,8 +9,9 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "types": ["node"],
-    "declaration": true
+    "declaration": true,
+    "outDir": "dist"
   },
-  "include": ["index.ts"],
+  "include": ["index.ts", "nylon/**/*.ts"],
   "exclude": ["node_modules"]
 }

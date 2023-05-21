@@ -50,7 +50,7 @@
     "lint": "eslint . -c ./.eslintrc.yml",
     "prepublishOnly": "tsc && napi prepublish -t npm",
     "version": "napi version",
-    "dev:watch": "cargo watch -c -q -w src -w index.ts -w examples -s 'npm run build:debug && RUST_LOG=debug ts-node examples/server.ts'"
+    "dev:watch": "cargo watch -c -q -w src -w index.ts -w nylon -w examples -s 'npm run build:debug && RUST_LOG=debug ts-node examples/server.ts'"
   },
   "devDependencies": {
     "@napi-rs/cli": "^2.14.6",
