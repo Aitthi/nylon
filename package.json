@@ -88,15 +88,5 @@
     "trailingComma": "all",
     "singleQuote": true,
     "arrowParens": "always"
-  },
-  "optionalDependencies": {
-    "nylon-rs-win32-x64-msvc": "0.0.8",
-    "nylon-rs-darwin-x64": "0.0.8",
-    "nylon-rs-linux-x64-gnu": "0.0.8",
-    "nylon-rs-linux-x64-musl": "0.0.8",
-    "nylon-rs-linux-arm64-gnu": "0.0.8",
-    "nylon-rs-linux-arm-gnueabihf": "0.0.8",
-    "nylon-rs-darwin-arm64": "0.0.8",
-    "nylon-rs-linux-arm64-musl": "0.0.8"
   }
 }
