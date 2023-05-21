@@ -155,7 +155,7 @@ async fn process(
     builder = builder.status(response["status"].as_u64().unwrap_or(200) as u16);
     for (k, v) in response["headers"].as_object().unwrap_or(
       serde_json::json!({
-          "content-type": "text/plain"
+          "content-type": "application/json"
       })
       .as_object()
       .unwrap(),
