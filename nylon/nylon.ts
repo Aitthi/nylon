@@ -11,7 +11,7 @@ export class Nylon {
   }
 
   private delegate(path: string, method: Method, handlers: Handler[]) {
-    const path_name = `[${method}] ${path ? path : '/'}`
+    const path_name = `/${method}${path ? path : '/'}`
     this.routes[path_name] = handlers
   }
 
