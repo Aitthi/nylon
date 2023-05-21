@@ -128,6 +128,12 @@ jobs:
           name: bindings-${{ matrix.settings.target }}
           path: ${{ env.APP_NAME }}.*.node
           if-no-files-found: error
+      - name: Upload nylon-node
+        uses: actions/upload-artifact@v3
+        with:
+          name: bindings-${{ matrix.settings.target }}
+          path: nylon-node.js
+          if-no-files-found: error
   publish:
     name: Publish
     runs-on: ubuntu-latest
