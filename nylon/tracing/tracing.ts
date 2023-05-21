@@ -1,7 +1,9 @@
-import { NylonNode } from './nylon.node'
-import { SafeAny } from './types'
+import { NylonNode } from './../nylon.node'
+import { SafeAny, TracingOptions } from './../types'
 
-export const Logger = {
+export { TracingOptions }
+
+export const Tracing = {
   info(...args: SafeAny[]) {
     return NylonNode.logger.info(args.join(' '))
   },
