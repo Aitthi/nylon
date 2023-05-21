@@ -1,6 +1,9 @@
+import { existsSync } from 'fs'
 import 'reflect-metadata'
 
-const NylonBin = require('./../nylon-node.js') as {
+const localFileExisted = existsSync('./../nylon-node.js')
+const localFile = localFileExisted ? './nylon-node.js' : './../nylon-node.js'
+const NylonBin = require(localFile) as {
   listen: (
     port: number,
     host: string,
