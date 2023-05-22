@@ -39,20 +39,15 @@ export class NylonFactoryStatic {
       if (!methods) methods = []
       methods.forEach((method) => {
         const handlers = [] as Handler[]
-        let request = {} as SafeAny
         const handler = async (req: Request) => {
-          request = {
-            ...request,
-            ...req,
-          }
           const args = [] as SafeAny[]
           const instance = method.descriptor.value.bind(controller)
           if (method.args) {
             method.args.forEach((arg) => {
               if (arg.type === 'params') {
-                args.push(request.params[arg.value])
+                args.push(req.params[arg.value])
               } else if (arg.type === 'query') {
-                args.push(request.query[arg.value])
+                args.push(req.query[arg.value])
               }
             })
           }
