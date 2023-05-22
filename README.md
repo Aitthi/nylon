@@ -35,7 +35,6 @@ import { getHeapStatistics } from 'v8'
 import { NylonFactory } from 'nylon-rs/core'
 import { Module, Controller, Get, Params, Query } from 'nylon-rs/common'
 import { Tracing, TracingOptions } from 'nylon-rs/tracing'
-import { Context } from 'nylon-rs/types'
 
 @Controller()
 export class MainController {
