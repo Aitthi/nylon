@@ -8,9 +8,9 @@ function delegate(method: string) {
       if (!methods) {
         methods = []
       }
-      path = `${method}/${path ?? ''}`
+      path = `/${path ?? ''}`
       const args = Reflect.getOwnMetadata(argsMetadataKey, target, propertyName)
-      const response: Response = Reflect.getOwnMetadata('response', target) ?? {
+      const response: Response = {
         is_end: false,
         status: 200,
         headers: {

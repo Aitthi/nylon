@@ -60,7 +60,7 @@ export class NylonFactoryStatic {
         }
       }
       handlers.push(handler)
-      this.routes[`${basePath}${method.path}`] = handlers
+      this.routes[`${basePath}${method.method}${method.path}`] = handlers
     })
   }
 
