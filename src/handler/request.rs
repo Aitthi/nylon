@@ -1,21 +1,14 @@
-use futures_util::stream::TryStreamExt;
+use super::http_body::parse_body;
+use super::url_parse::url_parse;
+use crate::router;
 use napi::bindgen_prelude::Promise;
 use napi::bindgen_prelude::*;
 use std::collections::HashMap;
 
-use crate::router;
-
-pub async fn handler(
+pub async fn request(
   req: hyper::Request<hyper::Body>,
 ) -> core::result::Result<hyper::Response<hyper::Body>, Error> {
   let (parts, body) = req.into_parts();
-  let entire_body = body
-    .try_fold(Vec::new(), |mut data, chunk| async move {
-      data.extend_from_slice(&chunk);
-      Ok(data)
-    })
-    .await
-    .unwrap();
   // hyper
   let routes = parts.extensions.get::<router::Router>().unwrap();
   let path = parts.uri.clone();
@@ -37,49 +30,13 @@ pub async fn handler(
         "content-type": "application/json"
       },
       "body": serde_json::Value::Null,
+      "raw_body": Vec::<u8>::new(),
   });
-  if let Some(raw_query) = raw_query {
-    let full_url = format!("htttp://localhost?{}", raw_query);
-    let url_parse = url::Url::parse(full_url.as_str()).unwrap();
-    request["query"] = serde_json::json!(url_parse
-      .query_pairs()
-      .into_owned()
-      .collect::<HashMap<String, String>>());
-  }
-  if !entire_body.is_empty() {
-    if let Some(content_type) = headers.get("content-type") {
-      if content_type.to_str().unwrap() == "application/json" {
-        request["body"] = serde_json::json!(serde_json::from_slice::<serde_json::Value>(
-          entire_body.as_slice()
-        )
-        .unwrap());
-      } else if vec![
-        "text/html",
-        "text/plain",
-        "application/javascript",
-        "application/xml",
-      ]
-      .contains(&content_type.to_str().unwrap())
-      {
-        request["body"] =
-          serde_json::Value::String(String::from_utf8_lossy(entire_body.as_slice()).to_string());
-      } else {
-        request["body"] = serde_json::Value::Array(
-          entire_body
-            .iter()
-            .map(|x| serde_json::Value::Number(serde_json::Number::from(*x)))
-            .collect::<Vec<serde_json::Value>>(),
-        );
-      }
-    } else {
-      request["body"] = serde_json::Value::Array(
-        entire_body
-          .iter()
-          .map(|x| serde_json::Value::Number(serde_json::Number::from(*x)))
-          .collect::<Vec<serde_json::Value>>(),
-      );
-    }
-  }
+
+  // parse query
+  url_parse(raw_query, &mut request);
+  // parse body
+  parse_body(body, headers, &mut request).await;
 
   let mut builder = hyper::Response::builder();
   if let Some(route) = routes.find(path.path(), method.as_str()) {

@@ -21,4 +21,5 @@ export interface Request {
     [key: string]: string
   }
   body: SafeAny
+  raw_body: Array<number>
 }

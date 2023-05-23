@@ -1,22 +1,31 @@
-import { NylonNode } from './../nylon.node'
+import { NylonBin } from './../nylon.node'
 import { SafeAny, TracingOptions } from './../types'
 
 export { TracingOptions }
 
+const TracingFunc = (spanName = '') => {
+  return {
+    info(...args: SafeAny[]) {
+      return NylonBin.Logger.init().info(args.join(' '), spanName)
+    },
+    debug(...args: SafeAny[]) {
+      return NylonBin.Logger.init().debug(args.join(' '), spanName)
+    },
+    error(...args: SafeAny[]) {
+      return NylonBin.Logger.init().error(args.join(' '), spanName)
+    },
+    warn(...args: SafeAny[]) {
+      return NylonBin.Logger.init().warn(args.join(' '), spanName)
+    },
+    trace(...args: SafeAny[]) {
+      return NylonBin.Logger.init().trace(args.join(' '), spanName)
+    }
+  }
+}
+
 export const Tracing = {
-  info(...args: SafeAny[]) {
-    return NylonNode.logger.info(args.join(' '))
-  },
-  debug(...args: SafeAny[]) {
-    return NylonNode.logger.debug(args.join(' '))
-  },
-  error(...args: SafeAny[]) {
-    return NylonNode.logger.error(args.join(' '))
-  },
-  warn(...args: SafeAny[]) {
-    return NylonNode.logger.warn(args.join(' '))
-  },
-  trace(...args: SafeAny[]) {
-    return NylonNode.logger.trace(args.join(' '))
-  },
+  ...TracingFunc(''),
+  scope(name: string) {
+    return TracingFunc(name)
+  }
 }

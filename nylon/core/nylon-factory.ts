@@ -1,7 +1,8 @@
-import { NylonNode } from '../nylon.node'
+import { NylonBin } from '../nylon.node'
 import { Handler, MethodMetadata, NylonOptions, Request, SafeAny } from '../types'
 
 export class NylonFactoryStatic {
+  nylonBin: any
   private routes: {
     [key: string]: SafeAny[]
   } = {}
@@ -11,11 +12,12 @@ export class NylonFactoryStatic {
     // console.info('NylonFactoryStatic.create', module)
     if (options?.tracing) {
       // TODO: Set RUST_LOG
-      NylonNode.set_env('RUST_LOG', options.tracing.join(','))
+      NylonBin.setEnv('RUST_LOG', options.tracing.join(','))
     }
+    this.nylonBin = NylonBin.Nylon.init()
     this.loadModule(module)
     return {
-      listen: this.listen.bind(this),
+      listen: this.listen.bind(this)
     }
   }
 
@@ -51,13 +53,20 @@ export class NylonFactoryStatic {
               args.push(req.params[arg.value])
             } else if (arg.type === 'query') {
               args.push(req.query[arg.value])
+            } else if (arg.type === 'body') {
+              if (arg.value) {
+                args.push(req.raw_body)
+              } else {
+                args.push(req.body)
+              }
             }
           })
         }
         const rs = await instance(...args)
+        console.info('req', req)
         return {
           ...method.response,
-          body: rs,
+          body: rs
         }
       }
       handlers.push(handler)
@@ -66,7 +75,8 @@ export class NylonFactoryStatic {
   }
 
   listen(port: number, host: string, callback: () => void) {
-    return NylonNode.listen(port, host, callback, this.routes)
+    this.nylonBin.addRoute(this.routes)
+    return this.nylonBin.http(port, host, callback)
   }
 }
 

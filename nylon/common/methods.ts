@@ -14,16 +14,16 @@ function delegate(method: string) {
         is_end: false,
         status: 200,
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: null,
+        body: null
       }
       methods.push({
         method,
         path,
         descriptor,
         args,
-        response,
+        response
       })
       Reflect.defineMetadata('methods', methods, target)
     }

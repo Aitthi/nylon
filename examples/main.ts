@@ -2,12 +2,11 @@ import * as os from 'os'
 import { getHeapStatistics } from 'v8'
 // // nylon-rs
 import { NylonFactory } from '../nylon/core'
-import { Module, Controller, Get, Params, Query } from '../nylon/common'
+import { Module, Controller, Get, Params, Query, Post, Body } from '../nylon/common'
 import { Tracing, TracingOptions } from '../nylon/tracing'
 
 @Controller()
 export class MainController {
-  
   @Get()
   index() {
     return {
@@ -15,36 +14,44 @@ export class MainController {
     }
   }
 
+  @Post()
+  indexPost(
+    @Body()
+    body: {
+      data: {
+        name: string
+      }
+    }
+  ) {
+    return {
+      message: `Hello ${body.data.name}!`
+    }
+  }
 
   @Get('hello/:name')
-  async hello(
-    @Params('name') name: string,
-    @Query('age') age: number,
-  ) {
+  async hello(@Params('name') name: string, @Query('age') age: number) {
     return {
       message: `Hello ${name}! You are ${age || 1} years old.`
     }
   }
-
 }
 
 @Module({
-    controllers: [
-      MainController
-    ],
+  controllers: [MainController]
 })
 export class MainModule {}
 
 async function bootstrap() {
   const app = NylonFactory.create(MainModule, {
-    tracing: [TracingOptions.DEBUG],
+    tracing: [TracingOptions.DEBUG]
   })
   await app.listen(3000, '0.0.0.0', () => {
-    Tracing.info('Worker', process.pid + ' is alive!')
-    Tracing.info('HOST_NAME', os.hostname())
-    Tracing.info('Platform', os.platform())
-    Tracing.info('Node Heap size limit', `${getHeapStatistics().heap_size_limit / (1024 * 1024)} Mb`)
-    Tracing.info(`🚀 Application is running on: 0.0.0.0:3000`)
+    let TracingScope = Tracing.scope('Bootstrap')
+    TracingScope.info('Worker', process.pid + ' is alive!')
+    TracingScope.info('HOST_NAME', os.hostname())
+    TracingScope.info('Platform', os.platform())
+    TracingScope.info('Node Heap size limit', `${getHeapStatistics().heap_size_limit / (1024 * 1024)} Mb`)
+    TracingScope.info(`🚀 Application is running on: 0.0.0.0:3000`)
   })
 }
 

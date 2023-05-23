@@ -5,7 +5,7 @@ export function Query(key: string) {
     const args = Reflect.getOwnMetadata(argsMetadataKey, target, propertyKey) ?? []
     args[parameterIndex] = {
       type: 'query',
-      value: key,
+      value: key
     }
     Reflect.defineMetadata(argsMetadataKey, args, target, propertyKey)
   }
