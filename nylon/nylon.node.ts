@@ -18,7 +18,10 @@ const NylonBin = require(localFile) as {
   error: (message: string) => void
   warn: (message: string) => void
   trace: (message: string) => void
+  setEnv: (key: string, value: string) => void
 }
+
+// console.info('NylonBin', NylonBin)
 
 export const NylonNode = {
   listen: NylonBin.listen,
@@ -29,4 +32,5 @@ export const NylonNode = {
     warn: NylonBin.warn,
     trace: NylonBin.trace,
   },
+  set_env: NylonBin.setEnv,
 }

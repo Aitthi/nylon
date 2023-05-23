@@ -11,6 +11,7 @@ export class NylonFactoryStatic {
     // console.info('NylonFactoryStatic.create', module)
     if (options?.tracing) {
       // TODO: Set RUST_LOG
+      NylonNode.set_env('RUST_LOG', options.tracing.join(','))
     }
     this.loadModule(module)
     return {

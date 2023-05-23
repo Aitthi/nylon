@@ -234,11 +234,12 @@ if (!nativeBinding) {
   throw new Error(`Failed to load native binding`)
 }
 
-const { info, debug, error, warn, trace, listen } = nativeBinding
+const { info, debug, error, warn, trace, setEnv, listen } = nativeBinding
 
 module.exports.info = info
 module.exports.debug = debug
 module.exports.error = error
 module.exports.warn = warn
 module.exports.trace = trace
+module.exports.setEnv = setEnv
 module.exports.listen = listen

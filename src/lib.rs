@@ -2,6 +2,7 @@
 pub mod logger;
 pub mod router;
 pub mod service;
+pub mod env;
 
 // use
 use hyper::Server;
