@@ -63,7 +63,6 @@ export class NylonFactoryStatic {
           })
         }
         const rs = await instance(...args)
-        console.info('req', req)
         return {
           ...method.response,
           body: rs
