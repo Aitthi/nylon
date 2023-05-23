@@ -18,7 +18,7 @@ export class NylonFactoryStatic {
     }
   }
 
-  private loadModule(module: any) {
+  private loadModule<T>(module: T) {
     let controllers: SafeAny[] = Reflect.getMetadata('controllers', module as SafeAny)
     if (!controllers) {
       controllers = []
