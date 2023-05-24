@@ -40,20 +40,15 @@ pub async fn request(
 
   let mut builder = hyper::Response::builder();
   if let Some(route) = routes.find(path.path(), method.as_str()) {
-    let handlers = route.handlers;
     request["params"] = serde_json::json!(route.params);
     // call handler
-    for handler in handlers.iter() {
-      if let Ok(res_data) = handler
-        .call_async::<Promise<serde_json::Value>>(serde_json::json!(request))
-        .await
-      {
-        if let Ok(res) = res_data.await {
-          response = res;
-          if response["is_end"].as_bool().unwrap_or(false) {
-            break;
-          }
-        }
+    if let Ok(res_data) = route
+      .handler
+      .call_async::<Promise<serde_json::Value>>(serde_json::json!(request))
+      .await
+    {
+      if let Ok(res) = res_data.await {
+        response = res;
       }
     }
     builder = builder.status(response["status"].as_u64().unwrap_or(200) as u16);

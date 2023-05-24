@@ -18,13 +18,11 @@ export class MainController {
   indexPost(
     @Body()
     body: {
-      data: {
-        name: string
-      }
+      name: string
     }
   ) {
     return {
-      message: `Hello ${body.data.name}!`
+      message: `Hello ${body.name}!`
     }
   }
 

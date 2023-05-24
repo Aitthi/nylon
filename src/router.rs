@@ -3,13 +3,13 @@ use std::collections::HashMap;
 
 pub type Handler = ThreadsafeFunction<serde_json::Value, ErrorStrategy::Fatal>;
 pub struct RouterResult<'a> {
-  pub handlers: &'a Vec<Handler>,
+  pub handler: &'a Handler,
   pub params: HashMap<String, String>,
 }
 
 #[derive(Clone)]
 pub struct Router {
-  routes: matchit::Router<Vec<Handler>>,
+  routes: matchit::Router<Handler>,
 }
 
 impl Router {
@@ -32,7 +32,7 @@ impl Router {
           .map(|(k, v)| (k.to_string(), v.to_string()))
           .collect();
         Some(RouterResult {
-          handlers: match_.value,
+          handler: match_.value,
           params,
         })
       }
@@ -40,12 +40,8 @@ impl Router {
     }
   }
 
-  pub fn delegate(
-    &mut self,
-    path: &str,
-    handlers: Vec<Handler>,
-  ) -> Result<bool, matchit::InsertError> {
-    self.routes.insert(format!("{}", path), handlers)?;
+  pub fn delegate(&mut self, path: &str, handler: Handler) -> Result<bool, matchit::InsertError> {
+    self.routes.insert(format!("{}", path), handler)?;
     Ok(true)
   }
 }

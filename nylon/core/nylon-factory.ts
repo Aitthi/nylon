@@ -4,7 +4,7 @@ import { Handler, MethodMetadata, NylonOptions, Request, SafeAny } from '../type
 export class NylonFactoryStatic {
   nylonBin: any
   private routes: {
-    [key: string]: SafeAny[]
+    [key: string]: Handler
   } = {}
 
   create<T>(module: T, options: NylonOptions = {}) {
@@ -43,7 +43,6 @@ export class NylonFactoryStatic {
 
   private registerMethod(methods: MethodMetadata[], controller: SafeAny, basePath: string) {
     methods.forEach((method) => {
-      const handlers = [] as Handler[]
       const handler = async (req: Request) => {
         const args = [] as SafeAny[]
         const instance = method.descriptor.value.bind(controller)
@@ -68,8 +67,7 @@ export class NylonFactoryStatic {
           body: rs
         }
       }
-      handlers.push(handler)
-      this.routes[`${basePath}${method.method}${method.path}`] = handlers
+      this.routes[`${basePath}${method.method}${method.path}`] = handler
     })
   }
 

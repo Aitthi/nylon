@@ -43,7 +43,7 @@ impl Nylon {
   }
 
   #[napi]
-  pub fn add_route(&mut self, routes: HashMap<String, Vec<router::Handler>>) -> Result<bool> {
+  pub fn add_route(&mut self, routes: HashMap<String, router::Handler>) -> Result<bool> {
     let span = tracing::span!(tracing::Level::INFO, "Routes");
     for route in routes.iter() {
       let now = time::Instant::now();

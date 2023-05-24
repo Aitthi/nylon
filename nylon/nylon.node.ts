@@ -18,7 +18,7 @@ export const NylonBin = require(localFile) as {
   Nylon: {
     init: () => {
       http: (port: number, host: string, callback: () => void) => Promise<boolean>
-      addRoute: (routes: { [key: string]: Handler[] }) => boolean
+      addRoute: (routes: { [key: string]: Handler }) => boolean
     }
   }
   setEnv: (key: string, value: string) => void
