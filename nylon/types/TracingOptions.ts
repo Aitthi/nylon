@@ -4,5 +4,5 @@ export enum TracingOptions {
   WARN = 'warn',
   ERROR = 'error',
   Trace = 'trace',
-  OFF = 'off',
+  OFF = 'off'
 }
