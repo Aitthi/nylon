@@ -5,8 +5,8 @@ export interface MethodMetadata {
   path: string
   descriptor: PropertyDescriptor
   args: {
-    type: 'params' | 'query'
-    value: string
+    type: 'params' | 'query' | 'body' | 'request' | 'response'
+    value?: any
   }[]
   response: Response
 }

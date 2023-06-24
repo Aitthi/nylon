@@ -2,7 +2,7 @@ use futures_util::stream::TryStreamExt;
 use hyper::{http::HeaderValue, HeaderMap};
 use serde_json::Value;
 
-use crate::plugins::{body_json, body_text};
+use super::body::{body_json, body_text};
 
 pub async fn parse_body(body: hyper::Body, headers: HeaderMap<HeaderValue>, request: &mut Value) {
   let entire_body = body

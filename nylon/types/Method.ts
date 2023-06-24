@@ -7,5 +7,5 @@ export enum Method {
   Head = 'HEAD',
   Options = 'OPTION',
   Trace = 'TRACE',
-  Connect = 'CONNECT',
+  Connect = 'CONNECT'
 }

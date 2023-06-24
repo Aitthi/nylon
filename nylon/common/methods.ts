@@ -1,4 +1,4 @@
-import { Response } from '../types'
+import { HttpStatusCode, Response } from '../types'
 import { argsMetadataKey } from './args'
 
 function delegate(method: string) {
@@ -12,7 +12,7 @@ function delegate(method: string) {
       const args = Reflect.getOwnMetadata(argsMetadataKey, target, propertyName)
       const response: Response = {
         is_end: false,
-        status: 200,
+        status: HttpStatusCode.Ok,
         headers: {
           'Content-Type': 'application/json'
         },

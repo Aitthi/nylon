@@ -1,5 +1,6 @@
 import { NylonBin } from '../nylon.node'
-import { Handler, MethodMetadata, NylonOptions, Request, SafeAny } from '../types'
+import { Handler, MethodMetadata, NylonOptions, Request, SafeAny, MiddlewareFn } from '../types'
+import { BodyOptions } from '../types/BodyOptions'
 
 export class NylonFactoryStatic {
   nylonBin: any
@@ -46,6 +47,32 @@ export class NylonFactoryStatic {
       const handler = async (req: Request) => {
         const args = [] as SafeAny[]
         const instance = method.descriptor.value.bind(controller)
+        let middleware = Reflect.getMetadata('middleware', method.descriptor.value) as MiddlewareFn[]
+        if (!middleware) middleware = []
+        let response = {
+          ...method.response,
+          headers: {
+            'Content-Type': 'application/json'
+          } as {
+            [key: string]: string
+          },
+          body: null
+        }
+        let request = req
+        for (const middle of middleware) {
+          const middle_rs = await middle(req, response)
+          response = {
+            ...response,
+            ...middle_rs.response
+          }
+          request = {
+            ...request,
+            ...middle_rs.request
+          }
+          if (response.is_end) {
+            return response
+          }
+        }
         if (method.args) {
           method.args.forEach((arg) => {
             if (arg.type === 'params') {
@@ -53,17 +80,22 @@ export class NylonFactoryStatic {
             } else if (arg.type === 'query') {
               args.push(req.query[arg.value])
             } else if (arg.type === 'body') {
-              if (arg.value) {
-                args.push(req.raw_body)
+              const body_option = arg.value as BodyOptions
+              if (body_option.raw) {
+                args.push(Buffer.from(req.raw_body))
               } else {
                 args.push(req.body)
               }
+            } else if (arg.type === 'response') {
+              args.push(response)
+            } else if (arg.type === 'request') {
+              args.push(request)
             }
           })
         }
         const rs = await instance(...args)
         return {
-          ...method.response,
+          ...response,
           body: rs
         }
       }
