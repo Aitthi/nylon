@@ -82,7 +82,7 @@ export class MainModule {}
 
 async function bootstrap() {
   const app = NylonFactory.create(MainModule, {
-    tracing: [TracingOptions.DEBUG]
+    tracing: [TracingOptions.Trace]
   })
   await app.listen(3000, '0.0.0.0', () => {
     let TracingScope = Tracing.scope('Bootstrap')
@@ -94,4 +94,8 @@ async function bootstrap() {
   })
 }
 
-bootstrap().finally(() => {})
+// Bootstrap for bun 1.0.x
+// @ts-ignore
+await bootstrap().then(() => {
+  console.log('Bootstrap done!')
+})
