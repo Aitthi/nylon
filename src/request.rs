@@ -1,4 +1,4 @@
-use napi::{bindgen_prelude::*, JsArrayBuffer};
+use napi::bindgen_prelude::*;
 use napi_derive::napi;
 use std::collections::HashMap;
 
@@ -72,7 +72,8 @@ impl Request {
   }
 
   #[napi]
-  pub fn form(&self) -> Result<HashMap<String, String>> {
+  pub fn form(&self, extended: Option<bool>) -> Result<serde_json::Value> {
+    let extended = extended.map_or(false, |extended| extended);
     let headers = self.request.headers.clone();
     let content_type = match headers.get("content-type") {
       Some(content_type) => content_type.to_lowercase(),
@@ -84,16 +85,46 @@ impl Request {
       );
     }
     let body = self.request.body.clone();
-    let Ok(body) = String::from_utf8(body) else {
-      return Err(Error::from_reason("Failed to parse form body"));
-    };
+    let body = String::from_utf8(body).unwrap_or_default();
+    if !extended {
+      let mut form: HashMap<String, String> = HashMap::new();
+      let mut keys: Vec<String> = Vec::new();
+      for pair in body.split('&') {
+        let mut pair = pair.split('=');
+        let key = pair.next().unwrap_or_default();
+        let value = pair.next().unwrap_or_default();
+        if keys.contains(&key.to_string()) {
+          let mut keys_len = keys.len();
+          if keys_len == 1 {
+            keys_len = 0;
+            let data = match form.get(&key.to_string()) {
+              Some(data) => data.to_string(),
+              None => "".to_string(),
+            };
+            let akey = format!("{}[{}]", key, keys_len);
+            form.insert(akey.to_string(), data.to_string());
+            form.remove(&key.to_string());
+          }
+          let keys_len = keys.len();
+          let key = format!("{}[{}]", key, keys_len);
+          form.insert(key.to_string(), value.to_string());
+          keys.push(key.to_string());
+        } else {
+          keys.push(key.to_string());
+          form.insert(key.to_string(), value.to_string());
+        }
+      }
+      return Ok(serde_json::to_value(form).unwrap_or_default());
+    }
+    // ex: name=John&name=Mike&age=20
     let mut form = HashMap::new();
     for pair in body.split('&') {
       let mut pair = pair.split('=');
       let key = pair.next().unwrap_or_default();
       let value = pair.next().unwrap_or_default();
-      form.insert(key.to_string(), value.to_string());
+      let values = form.entry(key.to_string()).or_insert_with(Vec::new);
+      values.push(value.to_string());
     }
-    Ok(form)
+    Ok(serde_json::to_value(form).unwrap_or_default())
   }
 }

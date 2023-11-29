@@ -24,7 +24,8 @@ async function bootstrap() {
     let req = new Request(ctx)
 
     return {
-      data: req.json()
+      form: req.form(),
+      form_extended: req.form(true)
     }
   })
 
