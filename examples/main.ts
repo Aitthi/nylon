@@ -1,4 +1,4 @@
-import { Nylon, Logger, Level, HttpException } from '../index'
+import { Nylon, Logger, Level, Request } from '../index'
 import { getHeapStatistics } from 'v8'
 import os from 'os'
 
@@ -7,11 +7,24 @@ async function bootstrap() {
   let app = new Nylon()
 
   // app register
-  app.get('/', async (_ctx) => {
+  app.get('/', async (ctx) => {
     // console.log(ctx)
     // throw new Error(HttpException(400, 'Bad Request'))
+
+    let req = new Request(ctx)
+
     return {
       data: 'Hello World!'
+    }
+  })
+
+  app.post('/', async (ctx) => {
+    // console.log(ctx)
+    // throw new Error(HttpException(400, 'Bad Request'))
+    let req = new Request(ctx)
+
+    return {
+      data: req.json()
     }
   })
 

@@ -1,9 +1,10 @@
 use axum::{
-  body::Body,
+  body::{self, Body, Bytes},
   extract::Request,
   http::{Response, StatusCode},
   Router,
 };
+use futures_util::stream::TryStreamExt;
 use napi::{
   bindgen_prelude::*,
   threadsafe_function::{ErrorStrategy::Fatal, ThreadsafeFunction},
@@ -67,6 +68,22 @@ impl Nylon {
       .into();
     Ok(true)
   }
+
+  #[napi]
+  pub fn post(
+    &mut self,
+    path: String,
+    handler: ThreadsafeFunction<serde_json::Value, Fatal>,
+  ) -> Result<bool> {
+    let router = self.router.lock().unwrap().clone();
+    self.router = router
+      .route(
+        &path,
+        axum::routing::post(|req| async move { process_request(req, handler).await }),
+      )
+      .into();
+    Ok(true)
+  }
 }
 
 async fn process_request(
@@ -77,13 +94,28 @@ async fn process_request(
   if let Some(query) = req.uri().query() {
     url = format!("{}?{}", url, query);
   }
+  let (parts, body) = req.into_parts();
+  let entire_body =
+    body
+      .into_data_stream()
+      .try_fold(Vec::new(), |mut data, chunk| async move {
+        data.extend_from_slice(&chunk);
+        Ok(data)
+      })
+      .await
+      .unwrap_or_default();
+
+  // println!("entire_body: {:?}", entire_body);
+  let method = parts.method;
+  let headers = parts.headers;
   let request = serde_json::json!({
-    "method": req.method().as_str(),
+    "method": method.as_str(),
     "url": url,
-    "headers": req.headers()
+    "headers": headers
       .iter()
       .map(|(k, v)| (k.as_str(), v.to_str().unwrap_or("")))
       .collect::<serde_json::Value>(),
+    "body": entire_body
   });
   let response = serde_json::json!({
     "headersSent": false,
