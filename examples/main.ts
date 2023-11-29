@@ -96,6 +96,10 @@ async function bootstrap() {
 
 // Bootstrap for bun 1.0.x
 // @ts-ignore
-await bootstrap().then(() => {
+// await bootstrap().then(() => {
+//   console.log('Bootstrap done!')
+// })
+
+bootstrap().then(() => {
   console.log('Bootstrap done!')
 })
