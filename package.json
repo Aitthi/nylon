@@ -1,6 +1,6 @@
 {
   "name": "nylon-rs",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "Nylon is a web framework for Node.js built with Tokio, Tower, Hyper, and Napi-rs",
   "main": "index.js",
   "repository": "https://github.com/Aitthi/nylon",
@@ -42,7 +42,7 @@
     "format:toml": "taplo format",
     "format:rs": "cargo fmt",
     "lint": "eslint . -c ./.eslintrc.yml",
-    "publish:all": "napi prepublish -t npm && cp index.js dist && cp index.d.ts dist && cp package.json dist && cp README.md dist && cp LICENSE dist && cd dist && npm publish --access public",
+    "publish:all": "mkdir -p dist && napi prepublish -t npm && cp index.js dist && cp index.d.ts dist && cp package.json dist && cp README.md dist && cp LICENSE dist && cd dist && npm publish --access public",
     "version": "napi version",
     "dev:watch": "RUST_BACKTRACE=1 cargo watch -c -q -w src -w examples -s 'npm run build:debug && ts-node examples/main.ts --project examples/tsconfig.json'"
   },
