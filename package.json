@@ -44,7 +44,7 @@
     "lint": "eslint . -c ./.eslintrc.yml",
     "publish:all": "tsc && napi prepublish -t npm && cp index.js dist && cp package.json dist && cp README.md dist && cp LICENSE dist && cd dist && npm publish --access public",
     "version": "napi version",
-    "dev:watch": "cargo watch -c -q -w src -w examples -s 'npm run build:debug && ts-node examples/main.ts --project examples/tsconfig.json'"
+    "dev:watch": "RUST_BACKTRACE=1 cargo watch -c -q -w src -w examples -s 'npm run build:debug && ts-node examples/main.ts --project examples/tsconfig.json'"
   },
   "devDependencies": {
     "@napi-rs/cli": "^2.14.6",
