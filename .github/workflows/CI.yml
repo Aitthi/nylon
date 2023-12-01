@@ -29,6 +29,8 @@ jobs:
             build: |
               npx pnpm build
               strip -x *.node
+              strip -x *.ts
+              strip -x *.js
           - host: ubuntu-latest
             target: x86_64-unknown-linux-gnu
             docker: ghcr.io/napi-rs/napi-rs/nodejs-rust:lts-debian
@@ -36,10 +38,15 @@ jobs:
               set -e &&
               npx pnpm build --target x86_64-unknown-linux-gnu &&
               strip *.node
+              strip -x *.ts
+              strip -x *.js
           - host: ubuntu-latest
             target: x86_64-unknown-linux-musl
             docker: ghcr.io/napi-rs/napi-rs/nodejs-rust:lts-alpine
-            build: set -e && npx pnpm build && strip *.node
+            build: set -e && npx pnpm build && 
+              strip *.node
+              strip -x *.ts
+              strip -x *.js
           - host: macos-latest
             target: aarch64-apple-darwin
             build: |
@@ -50,6 +57,8 @@ jobs:
               export CFLAGS="-isysroot $SYSROOT -isystem $SYSROOT";
               npx pnpm build --target aarch64-apple-darwin
               strip -x *.node
+              strip -x *.ts
+              strip -x *.js
           - host: ubuntu-latest
             target: aarch64-unknown-linux-gnu
             docker: ghcr.io/napi-rs/napi-rs/nodejs-rust:lts-debian-aarch64
@@ -57,6 +66,8 @@ jobs:
               set -e &&
               npx pnpm build --target aarch64-unknown-linux-gnu &&
               aarch64-unknown-linux-gnu-strip *.node
+              aarch64-unknown-linux-gnu-strip -x *.ts
+              aarch64-unknown-linux-gnu-strip -x *.js
           - host: ubuntu-latest
             target: armv7-unknown-linux-gnueabihf
             setup: |
@@ -65,6 +76,8 @@ jobs:
             build: |
               npx pnpm build --target armv7-unknown-linux-gnueabihf
               arm-linux-gnueabihf-strip *.node
+              arm-linux-gnueabihf-strip -x *.ts
+              arm-linux-gnueabihf-strip -x *.js
           - host: ubuntu-latest
             target: aarch64-unknown-linux-musl
             docker: ghcr.io/napi-rs/napi-rs/nodejs-rust:lts-alpine
@@ -73,6 +86,8 @@ jobs:
               rustup target add aarch64-unknown-linux-musl &&
               npx pnpm build --target aarch64-unknown-linux-musl &&
               /aarch64-linux-musl-cross/bin/aarch64-linux-musl-strip *.node
+              /aarch64-linux-musl-cross/bin/aarch64-linux-musl-strip -x *.ts
+              /aarch64-linux-musl-cross/bin/aarch64-linux-musl-strip -x *.js
     name: stable - ${{ matrix.settings.target }} - node@18
     runs-on: ${{ matrix.settings.host }}
     steps:
@@ -151,14 +166,14 @@ jobs:
       - name: List packages
         run: ls -R ./npm
         shell: bash
-      - name: List packages
+      - name: List Dir
         run: ls -la
         shell: bash
-      - name: Publish
-        run: |
-          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
-          # npm publish --access public
-          npx pnpm run publish:all
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Publish
+      #   run: |
+      #     echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+      #     # npm publish --access public
+      #     npx pnpm run publish:all
+      #   env:
+      #     NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
