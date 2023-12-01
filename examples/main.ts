@@ -36,11 +36,14 @@ async function bootstrap() {
     // console.log(ctx)
     // throw new Error(HttpException(400, 'Bad Request'))
     let req = new Request(ctx)
+    let res = new Response(ctx)
 
-    return {
+    res.json({
       form: req.form(),
       form_extended: req.form(true)
-    }
+    })
+
+    return res.end()
   })
 
   await app.listen(3000, '0.0.0.0', () => {
