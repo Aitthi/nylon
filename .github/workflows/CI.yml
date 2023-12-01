@@ -15,7 +15,6 @@ env:
       - '**/*.gitignore'
       - .editorconfig
       - docs/**
-  pull_request: null
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -35,7 +34,6 @@ jobs:
             docker: ghcr.io/napi-rs/napi-rs/nodejs-rust:lts-debian
             build: |-
               set -e &&
-              npm install -g pnpm &&
               pnpm build --target x86_64-unknown-linux-gnu &&
               strip *.node
           # - host: ubuntu-latest

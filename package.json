@@ -35,8 +35,8 @@
   },
   "scripts": {
     "artifacts": "napi artifacts",
-    "build": "napi build --platform --release --platform --js=index.js --pipe \"prettier -w\"",
-    "build:debug": "napi build --platform --js=index.js --pipe \"prettier -w\"",
+    "build": "napi build --platform --release --platform --js=index.js",
+    "build:debug": "napi build --platform --js=index.js",
     "format": "run-p format:prettier format:rs format:toml",
     "format:prettier": "prettier . -w",
     "format:toml": "taplo format",
