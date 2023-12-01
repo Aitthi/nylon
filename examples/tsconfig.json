@@ -1,21 +1,16 @@
 {
-    "compilerOptions": {
-      "target": "ES2020",
-      "strict": true,
-      "moduleResolution": "node",
-      "module": "CommonJS",
-      "noUnusedLocals": true,
-      "noUnusedParameters": true,
-      "esModuleInterop": true,
-      "allowSyntheticDefaultImports": true,
-      "emitDecoratorMetadata": true,
-      "experimentalDecorators": true,
-      "types": [
-        "node"
-      ],
-      "declaration": true
-    },
-    "include": [
-      "main.ts"
+  "compilerOptions": {
+    "target": "ESNext",
+    "moduleResolution": "NodeNext",
+    "module": "NodeNext",
+    "types": [
+      "node"
+    ],
+    "lib": [
+      "ESNext"
     ]
-  }
+  },
+  "include": [
+    "main.ts"
+  ]
+}

@@ -10,20 +10,16 @@ version = "0.1.0"
 crate-type = ["cdylib"]
 
 [dependencies]
-futures-util       = "0.3.28"
-hyper              = { version = "0.14.26", features = ["full"] }
-matchit            = "0.7.0"
-napi               = { version = "2.13.3", features = ["napi8", "serde-json", "tokio_rt"] }
-napi-derive        = { version = "2.13.0" }
-serde              = { version = "1.0.163", features = ["derive"] }
-serde_json         = "1.0.96"
-tokio              = { version = "1.28.2", features = ["full"] }
-tower              = { version = "0.4.13", features = ["make", "util"] }
-tower-http         = { version = "0.4.0", features = ["add-extension", "trace"] }
-tracing            = "0.1.37"
-tracing-subscriber = "0.3.16"
-url                = { version = "2.3.1", features = ["serde"] }
-anyhow             = "1.0.71"
+napi               = { version = "2.14", features = ["serde-json", "tokio_rt"] }
+napi-derive        = { version = "2.14" }
+serde              = { version = "1", features = ["derive"] }
+serde_json         = "1"
+tokio              = { version = "1", features = ["full"] }
+tracing            = "0.1"
+tracing-subscriber = "0.3"
+anyhow             = "1"
+axum = "0.7"
+futures-util       = "0.3"
 
 [build-dependencies]
 napi-build = "2.0.1"
