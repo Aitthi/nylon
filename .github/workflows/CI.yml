@@ -154,11 +154,11 @@ jobs:
       - name: List Dir
         run: ls -la
         shell: bash
-      # - name: Publish
-      #   run: |
-      #     echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
-      #     # npm publish --access public
-      #     npx pnpm run publish:all
-      #   env:
-      #     NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish
+        run: |
+          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+          # npm publish --access public
+          npx pnpm run publish:all
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
