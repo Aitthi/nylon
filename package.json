@@ -1,6 +1,6 @@
 {
   "name": "nylon-rs",
-  "version": "1.1.13",
+  "version": "2.0.0",
   "description": "Nylon is a web framework for Node.js built with Tokio, Tower, Hyper, and Napi-rs",
   "main": "index.js",
   "repository": "https://github.com/Aitthi/nylon",

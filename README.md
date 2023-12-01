@@ -18,18 +18,6 @@ yarn add nylon-rs
 
 ## Usage
 
-edit tsconfig.json
-
-```json
-{
-  "compilerOptions": {
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    ....
-  }
-}
-```
-
 ```ts
 import { Nylon, Logger, Level, Request, Response, HttpException } from 'nylon-rs'
 import { getHeapStatistics } from 'v8'
