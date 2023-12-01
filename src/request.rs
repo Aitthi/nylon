@@ -6,6 +6,8 @@ use std::collections::HashMap;
 struct RequestData {
     headers: HashMap<String, String>,
     body: Vec<u8>,
+    method: String,
+    url: String,
 }
 
 #[napi]
@@ -22,6 +24,18 @@ impl Request {
         let mut request = RequestData {
             headers: HashMap::new(),
             body: Vec::new(),
+            method: ctx
+                .get("method")
+                .unwrap_or(&serde_json::Value::Null)
+                .as_str()
+                .unwrap_or_default()
+                .to_string(),
+            url: ctx
+                .get("url")
+                .unwrap_or(&serde_json::Value::Null)
+                .as_str()
+                .unwrap_or_default()
+                .to_string(),
         };
         let binding = serde_json::Map::new();
         let headers = ctx["headers"].as_object().unwrap_or(&binding);
@@ -153,5 +167,17 @@ impl Request {
     pub fn headers(&self) -> Result<serde_json::Value> {
         let headers = self.request.headers.clone();
         Ok(serde_json::to_value(headers).unwrap_or_default())
+    }
+
+    #[napi]
+    pub fn method(&self) -> Result<String> {
+        let method = self.request.method.clone();
+        Ok(method)
+    }
+
+    #[napi]
+    pub fn url(&self) -> Result<String> {
+        let url = self.request.url.clone();
+        Ok(url)
     }
 }

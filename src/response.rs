@@ -11,11 +11,18 @@ pub struct Response {
     body: Vec<u8>,
     #[serde(rename = "headersSent")]
     headers_sent: bool,
+    is_end: bool,
 }
 
 impl Response {
-    pub fn into_parts(self) -> (u16, HashMap<String, String>, Vec<u8>, bool) {
-        (self.status, self.headers, self.body, self.headers_sent)
+    pub fn into_parts(self) -> (u16, HashMap<String, String>, Vec<u8>, bool, bool) {
+        (
+            self.status,
+            self.headers,
+            self.body,
+            self.headers_sent,
+            self.is_end,
+        )
     }
 }
 
@@ -25,12 +32,14 @@ impl Response {
     pub fn new(ctx: serde_json::Value) -> Self {
         let binding = serde_json::Map::new();
         let ctx = ctx["response"].as_object().unwrap_or(&binding);
-        let mut response = Response {
-            status: 200,
-            headers: HashMap::new(),
-            body: Vec::new(),
-            headers_sent: false,
-        };
+        let mut response =
+            Response {
+                status: 200,
+                headers: HashMap::new(),
+                body: Vec::new(),
+                headers_sent: false,
+                is_end: false,
+            };
         let binding = serde_json::Map::new();
         let headers = ctx["headers"].as_object().unwrap_or(&binding);
         for (key, value) in headers {
@@ -59,7 +68,20 @@ impl Response {
           "status": self.status,
           "headers": self.headers,
           "body": self.body,
-          "headersSent": self.headers_sent
+          "headersSent": self.headers_sent,
+          "is_end": true
+        })
+    }
+
+    #[napi]
+    pub fn next(&mut self) -> serde_json::Value {
+        self.headers_sent = true;
+        serde_json::json!({
+          "status": self.status,
+          "headers": self.headers,
+          "body": self.body,
+          "headersSent": self.headers_sent,
+          "is_end": false
         })
     }
 

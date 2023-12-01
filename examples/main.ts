@@ -1,4 +1,4 @@
-import { Nylon, Logger, Level, Request, Response } from '../index'
+import { Nylon, Logger, Level, Request, Response, HttpException } from '../index'
 import { getHeapStatistics } from 'v8'
 import os from 'os'
 
@@ -6,45 +6,50 @@ async function bootstrap() {
   let logger = new Logger(Level.Info)
   let app = new Nylon()
 
-  // app register
-  app.get('/', async (ctx) => {
-    // console.log(ctx)
-    // throw new Error(HttpException(400, 'Bad Request'))
+  app.get('/', [
+    async (ctx) => {
+      let req = new Request(ctx)
+      let res = new Response(ctx)
+      res.json({
+        data: {
+          name: 'Nylon',
+          version: '1.0.0',
+          user_agent: req.header('user-agent')
+        }
+      })
+      return res.next()
+    },
+    async (ctx) => {
+      // throw new Error(HttpException(401, 'Unauthorized'))
 
-    let req = new Request(ctx)
-    let res = new Response(ctx)
+      let res = new Response(ctx)
+      res.status(201)
+      return res.end()
+    }
+  ])
 
-    // req.headers()
-    // console.log(JSON.stringify(req.headers(), null, 2))
+  app.post('/', [
+    async (ctx) => {
+      let req = new Request(ctx)
+      let res = new Response(ctx)
+      res.json({
+        data: {
+          method: req.method(),
+          name: 'Nylon',
+          version: '1.0.0',
+          user_agent: req.header('user-agent')
+        }
+      })
+      return res.next()
+    },
+    async (ctx) => {
+      // throw new Error(HttpException(401, 'Unauthorized'))
 
-    res.status(201)
-    res.json({
-      data: {
-        name: 'Nylon',
-        version: '1.0.0',
-        user_agent: req.header('user-agent')
-      }
-    })
-    // res.html('<h1>Hello World!</h1>')
-    // res.text('Hello World!')
-    // res.send('Hello World!')
-
-    return res.end()
-  })
-
-  app.post('/', async (ctx) => {
-    // console.log(ctx)
-    // throw new Error(HttpException(400, 'Bad Request'))
-    let req = new Request(ctx)
-    let res = new Response(ctx)
-
-    res.json({
-      form: req.form(),
-      form_extended: req.form(true)
-    })
-
-    return res.end()
-  })
+      let res = new Response(ctx)
+      res.status(201)
+      return res.end()
+    }
+  ])
 
   await app.listen(3000, '0.0.0.0', () => {
     let scopeScope = logger.scope('Bootstrap')

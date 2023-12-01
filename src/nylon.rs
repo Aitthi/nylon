@@ -3,7 +3,7 @@ use axum::{
     body::Body,
     extract::Request,
     http::{Response, StatusCode},
-    Router,
+    routing, Router,
 };
 use futures_util::stream::TryStreamExt;
 use napi::{
@@ -15,8 +15,37 @@ use serde_json::Value;
 use std::{collections::HashMap, sync::Mutex};
 
 #[napi]
+pub enum Method {
+    Get,
+    Post,
+    Put,
+    Delete,
+    Patch,
+    Head,
+    Options,
+    Trace,
+}
+
+impl Method {
+    pub fn from_str(method: &str) -> Self {
+        match method {
+            "get" => Method::Get,
+            "post" => Method::Post,
+            "put" => Method::Put,
+            "delete" => Method::Delete,
+            "patch" => Method::Patch,
+            "head" => Method::Head,
+            "options" => Method::Options,
+            "trace" => Method::Trace,
+            _ => Method::Get,
+        }
+    }
+}
+
+#[derive(Clone)]
+#[napi]
 pub struct Nylon {
-    router: Mutex<Router>,
+    router: HashMap<String, HashMap<String, Vec<ThreadsafeFunction<serde_json::Value, Fatal>>>>,
 }
 
 #[napi]
@@ -26,7 +55,7 @@ impl Nylon {
         // Setup tracing
         tracing::info!("Starting Nylon application...");
         Nylon {
-            router: Mutex::new(Router::new()),
+            router: HashMap::new(),
         }
     }
 
@@ -47,52 +76,209 @@ impl Nylon {
         let Ok(listener) = tokio::net::TcpListener::bind(addr).await else {
             return Err(Error::from_reason("Failed to bind to address"));
         };
-        let server = axum::serve(listener, self.router.lock().unwrap().clone());
+
+        let mut svc_router = Mutex::new(Router::new());
+        for (path, method_handler) in &self.router {
+            for (method, handler) in method_handler {
+                let handler = handler.clone();
+                let router = svc_router.lock().unwrap().clone();
+                match Method::from_str(method) {
+                    Method::Get => {
+                        svc_router = router
+                            .route(
+                                path,
+                                routing::get(|req: Request<Body>| async move {
+                                    process_request(req, handler).await
+                                }),
+                            )
+                            .into();
+                    }
+                    Method::Post => {
+                        svc_router = router
+                            .route(
+                                path,
+                                routing::post(|req: Request<Body>| async move {
+                                    process_request(req, handler).await
+                                }),
+                            )
+                            .into();
+                    }
+                    Method::Put => {
+                        svc_router = router
+                            .route(
+                                path,
+                                routing::put(|req: Request<Body>| async move {
+                                    process_request(req, handler).await
+                                }),
+                            )
+                            .into();
+                    }
+                    Method::Delete => {
+                        svc_router = router
+                            .route(
+                                path,
+                                routing::delete(|req: Request<Body>| async move {
+                                    process_request(req, handler).await
+                                }),
+                            )
+                            .into();
+                    }
+                    Method::Patch => {
+                        svc_router = router
+                            .route(
+                                path,
+                                routing::patch(|req: Request<Body>| async move {
+                                    process_request(req, handler).await
+                                }),
+                            )
+                            .into();
+                    }
+                    Method::Head => {
+                        svc_router = router
+                            .route(
+                                path,
+                                routing::head(|req: Request<Body>| async move {
+                                    process_request(req, handler).await
+                                }),
+                            )
+                            .into();
+                    }
+                    Method::Options => {
+                        svc_router = router
+                            .route(
+                                path,
+                                routing::options(|req: Request<Body>| async move {
+                                    process_request(req, handler).await
+                                }),
+                            )
+                            .into();
+                    }
+                    Method::Trace => {
+                        svc_router = router
+                            .route(
+                                path,
+                                routing::trace(|req: Request<Body>| async move {
+                                    process_request(req, handler).await
+                                }),
+                            )
+                            .into();
+                    }
+                };
+            }
+        }
+
+        let server = axum::serve(listener, svc_router.lock().unwrap().clone());
         if let Err(e) = server.await {
             tracing::error!("Server error: {}", e);
         }
         Ok(true)
     }
 
+    pub fn route(
+        &mut self,
+        path: &str,
+        method: Method,
+        handler: Vec<ThreadsafeFunction<serde_json::Value, Fatal>>,
+    ) {
+        let method = match method {
+            Method::Get => "get",
+            Method::Post => "post",
+            Method::Put => "put",
+            Method::Delete => "delete",
+            Method::Patch => "patch",
+            Method::Head => "head",
+            Method::Options => "options",
+            Method::Trace => "trace",
+        };
+        let mut router = self.router.clone();
+        if let Some(method_handler) = router.get_mut(path) {
+            method_handler.insert(method.to_string(), handler);
+        } else {
+            let mut method_handler = HashMap::new();
+            method_handler.insert(method.to_string(), handler);
+            router.insert(path.to_string(), method_handler);
+        }
+        self.router = router;
+    }
+
     #[napi]
     pub fn get(
         &mut self,
         path: String,
-        handler: ThreadsafeFunction<serde_json::Value, Fatal>,
-    ) -> Result<bool> {
-        let router = self.router.lock().unwrap().clone();
-        self.router =
-            router
-                .route(
-                    &path,
-                    axum::routing::get(|req| async move { process_request(req, handler).await }),
-                )
-                .into();
-        Ok(true)
+        handler: Vec<ThreadsafeFunction<serde_json::Value, Fatal>>,
+    ) {
+        self.route(path.as_str(), Method::Get, handler);
     }
 
     #[napi]
     pub fn post(
         &mut self,
         path: String,
-        handler: ThreadsafeFunction<serde_json::Value, Fatal>,
-    ) -> Result<bool> {
-        let router = self.router.lock().unwrap().clone();
-        self.router =
-            router
-                .route(
-                    &path,
-                    axum::routing::post(|req| async move { process_request(req, handler).await }),
-                )
-                .into();
-        Ok(true)
+        handler: Vec<ThreadsafeFunction<serde_json::Value, Fatal>>,
+    ) {
+        self.route(path.as_str(), Method::Post, handler);
+    }
+
+    #[napi]
+    pub fn put(
+        &mut self,
+        path: String,
+        handler: Vec<ThreadsafeFunction<serde_json::Value, Fatal>>,
+    ) {
+        self.route(path.as_str(), Method::Put, handler);
+    }
+
+    #[napi]
+    pub fn delete(
+        &mut self,
+        path: String,
+        handler: Vec<ThreadsafeFunction<serde_json::Value, Fatal>>,
+    ) {
+        self.route(path.as_str(), Method::Delete, handler);
+    }
+
+    #[napi]
+    pub fn patch(
+        &mut self,
+        path: String,
+        handler: Vec<ThreadsafeFunction<serde_json::Value, Fatal>>,
+    ) {
+        self.route(path.as_str(), Method::Patch, handler);
+    }
+
+    #[napi]
+    pub fn head(
+        &mut self,
+        path: String,
+        handler: Vec<ThreadsafeFunction<serde_json::Value, Fatal>>,
+    ) {
+        self.route(path.as_str(), Method::Head, handler);
+    }
+
+    #[napi]
+    pub fn options(
+        &mut self,
+        path: String,
+        handler: Vec<ThreadsafeFunction<serde_json::Value, Fatal>>,
+    ) {
+        self.route(path.as_str(), Method::Options, handler);
+    }
+
+    #[napi]
+    pub fn trace(
+        &mut self,
+        path: String,
+        handler: Vec<ThreadsafeFunction<serde_json::Value, Fatal>>,
+    ) {
+        self.route(path.as_str(), Method::Trace, handler);
     }
 }
 
 async fn process_request(
     req: Request<Body>,
-    handler: ThreadsafeFunction<serde_json::Value, Fatal>,
+    handlers: Vec<ThreadsafeFunction<serde_json::Value, Fatal>>,
 ) -> Response<Body> {
+    let mut handlers = handlers;
     let mut url = req.uri().path().to_string();
     if let Some(query) = req.uri().query() {
         url = format!("{}?{}", url, query);
@@ -107,10 +293,8 @@ async fn process_request(
         .await
         .unwrap_or_default();
 
-    // println!("entire_body: {:?}", entire_body);
     let method = parts.method;
     let headers = parts.headers;
-    // println!("headers: {:#?}", headers);
     let request = serde_json::json!({
       "method": method.as_str(),
       "url": url,
@@ -127,29 +311,46 @@ async fn process_request(
       "headers": HashMap::<String, String>::new(),
       "body": Vec::<u8>::new(),
     });
-    let call_data = serde_json::json!({
+    let mut call_data = serde_json::json!({
       "request": request,
       "response": response,
     });
     let mut res = Response::builder();
-    let js_res = handler.call_async::<Promise<Value>>(call_data);
-    let js_data: NylonResponse = match js_res.await {
-        Ok(async_body) => match async_body.await {
-            Ok(body) => match serde_json::from_value(body) {
-                Ok(body) => body,
-                Err(err) => return res_error(err.into()),
+    let mut res_status = 200;
+    let mut res_headers = HashMap::new();
+    let mut res_body = Vec::new();
+    while handlers.len() > 0 {
+        let handler = handlers.remove(0);
+        let js_res = handler.call_async::<Promise<Value>>(call_data.clone());
+        let js_data: NylonResponse = match js_res.await {
+            Ok(async_body) => match async_body.await {
+                Ok(body) => match serde_json::from_value(body) {
+                    Ok(body) => body,
+                    Err(err) => return res_error(err.into()),
+                },
+                Err(err) => return res_error(err),
             },
             Err(err) => return res_error(err),
-        },
-        Err(err) => return res_error(err),
-    };
-    // println!("js_data {:#?}", js_data);
-    let (status, headers, body, _) = js_data.into_parts();
-    res = res.status(StatusCode::from_u16(status).unwrap());
-    for (key, value) in headers {
+        };
+        let (status, headers, body, _, is_end) = js_data.into_parts();
+        call_data["response"] = serde_json::json!({
+          "headersSent": true,
+          "status": status,
+          "headers": headers,
+          "body": body,
+        });
+        res_status = status;
+        res_headers = headers;
+        res_body = body;
+        if is_end {
+            break;
+        }
+    }
+    res = res.status(StatusCode::from_u16(res_status).unwrap());
+    for (key, value) in res_headers {
         res = res.header(key, value);
     }
-    res.body(Body::from(body)).unwrap()
+    res.body(Body::from(res_body)).unwrap()
 }
 
 fn res_error(err: Error) -> Response<Body> {
