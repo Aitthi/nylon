@@ -155,7 +155,7 @@ jobs:
         run: ls -la
         shell: bash
       - name: remove nylon-rs-win32-x64-msv
-        run: curl -L https://github.com/jqlang/jq/releases/download/jq-1.7/jq-linux-amd64 -o ~/jq && ~/jq 'del(.optionalDependencies."nylon-rs-win32-x64-msvc")' package.json > package.json.tmp && mv package.json.tmp package.json
+        run: curl -L https://github.com/jqlang/jq/releases/download/jq-1.7/jq-linux-amd64 -o jq && jq 'del(.optionalDependencies."nylon-rs-win32-x64-msvc")' package.json > package.json.tmp && mv package.json.tmp package.json
         shell: bash
       - name: cat package.json
         run: cat package.json
