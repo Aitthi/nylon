@@ -28,7 +28,7 @@ pub enum Method {
 }
 
 impl Method {
-    pub fn from_str(method: &str) -> Self {
+    pub fn from_str_method(method: &str) -> Self {
         match method {
             "get" => Method::Get,
             "post" => Method::Post,
@@ -43,7 +43,7 @@ impl Method {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Default)]
 #[napi]
 pub struct Nylon {
     router: HashMap<String, HashMap<String, Vec<ThreadsafeFunction<serde_json::Value, Fatal>>>>,
@@ -80,7 +80,7 @@ impl Nylon {
                 let handler = handler.clone();
                 let router = svc_router.lock().unwrap().clone();
                 let add_router_time = std::time::Instant::now();
-                match Method::from_str(method) {
+                match Method::from_str_method(method) {
                     Method::Get => {
                         svc_router = router
                             .route(
@@ -381,7 +381,7 @@ async fn process_request(
     let mut res_status = 200;
     let mut res_headers = HashMap::new();
     let mut res_body = Vec::new();
-    while handlers.len() > 0 {
+    while !handlers.is_empty() {
         let handler = handlers.remove(0);
         let js_res = handler.call_async::<Promise<Value>>(call_data.clone());
         let js_data: NylonResponse = match js_res.await {

@@ -74,7 +74,7 @@ impl Response {
     }
 
     #[napi]
-    pub fn next(&mut self) -> serde_json::Value {
+    pub fn jump(&mut self) -> serde_json::Value {
         self.headers_sent = true;
         serde_json::json!({
           "status": self.status,

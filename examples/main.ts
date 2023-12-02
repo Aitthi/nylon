@@ -19,7 +19,7 @@ async function bootstrap() {
           user_agent: req.header('user-agent')
         }
       })
-      return res.next()
+      return res.jump()
     },
     async (ctx) => {
       // throw new Error(HttpException(401, 'Unauthorized'))
@@ -44,7 +44,7 @@ async function bootstrap() {
           user_agent: req.header('user-agent')
         }
       })
-      return res.next()
+      return res.jump()
     },
     async (ctx) => {
       // throw new Error(HttpException(401, 'Unauthorized'))
@@ -72,7 +72,7 @@ async function bootstrap() {
           user_agent: req.header('user-agent')
         }
       })
-      return res.next()
+      return res.jump()
     },
     async (ctx) => {
       // throw new Error(HttpException(401, 'Unauthorized'))

@@ -17,7 +17,7 @@ pub enum Level {
 }
 
 impl Level {
-    fn to_tracing_level(&self) -> tracing::Level {
+    fn to_tracing_level(self) -> tracing::Level {
         match self {
             Level::Info => tracing::Level::INFO,
             Level::Debug => tracing::Level::DEBUG,
@@ -35,10 +35,7 @@ impl Logger {
         // Setup tracing
         let level = level.to_tracing_level();
         let subscriber = tracing_subscriber::fmt().with_max_level(level).finish();
-        match tracing::subscriber::set_global_default(subscriber) {
-            Ok(_) => (),
-            Err(_) => (),
-        }
+        let _ = tracing::subscriber::set_global_default(subscriber).is_ok();
         tracing::info!("Starting Nylon application...");
         Logger { span_name: None }
     }
