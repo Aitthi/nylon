@@ -1,7 +1,7 @@
 use crate::response::Response as NylonResponse;
 use axum::{
     body::Body,
-    extract::Request,
+    extract::{Path, Query, Request},
     http::{Response, StatusCode},
     routing, Router,
 };
@@ -24,6 +24,7 @@ pub enum Method {
     Head,
     Options,
     Trace,
+    Any,
 }
 
 impl Method {
@@ -66,10 +67,6 @@ impl Nylon {
         host: Option<String>,
         callback: ThreadsafeFunction<()>,
     ) -> Result<bool> {
-        callback.call(
-            Ok(()),
-            napi::threadsafe_function::ThreadsafeFunctionCallMode::NonBlocking,
-        );
         // Start the server
         let host = host.unwrap_or("127.0.0.1".to_string());
         let addr = format!("{}:{}", host, port);
@@ -82,14 +79,19 @@ impl Nylon {
             for (method, handler) in method_handler {
                 let handler = handler.clone();
                 let router = svc_router.lock().unwrap().clone();
+                let add_router_time = std::time::Instant::now();
                 match Method::from_str(method) {
                     Method::Get => {
                         svc_router = router
                             .route(
                                 path,
-                                routing::get(|req: Request<Body>| async move {
-                                    process_request(req, handler).await
-                                }),
+                                routing::get(
+                                    |params: Path<HashMap<String, String>>,
+                                     query: Query<HashMap<String, String>>,
+                                     req: Request<Body>| async move {
+                                        process_request(req, params, query, handler).await
+                                    },
+                                ),
                             )
                             .into();
                     }
@@ -97,9 +99,13 @@ impl Nylon {
                         svc_router = router
                             .route(
                                 path,
-                                routing::post(|req: Request<Body>| async move {
-                                    process_request(req, handler).await
-                                }),
+                                routing::post(
+                                    |params: Path<HashMap<String, String>>,
+                                     query: Query<HashMap<String, String>>,
+                                     req: Request<Body>| async move {
+                                        process_request(req, params, query, handler).await
+                                    },
+                                ),
                             )
                             .into();
                     }
@@ -107,9 +113,13 @@ impl Nylon {
                         svc_router = router
                             .route(
                                 path,
-                                routing::put(|req: Request<Body>| async move {
-                                    process_request(req, handler).await
-                                }),
+                                routing::put(
+                                    |params: Path<HashMap<String, String>>,
+                                     query: Query<HashMap<String, String>>,
+                                     req: Request<Body>| async move {
+                                        process_request(req, params, query, handler).await
+                                    },
+                                ),
                             )
                             .into();
                     }
@@ -117,9 +127,13 @@ impl Nylon {
                         svc_router = router
                             .route(
                                 path,
-                                routing::delete(|req: Request<Body>| async move {
-                                    process_request(req, handler).await
-                                }),
+                                routing::delete(
+                                    |params: Path<HashMap<String, String>>,
+                                     query: Query<HashMap<String, String>>,
+                                     req: Request<Body>| async move {
+                                        process_request(req, params, query, handler).await
+                                    },
+                                ),
                             )
                             .into();
                     }
@@ -127,9 +141,13 @@ impl Nylon {
                         svc_router = router
                             .route(
                                 path,
-                                routing::patch(|req: Request<Body>| async move {
-                                    process_request(req, handler).await
-                                }),
+                                routing::patch(
+                                    |params: Path<HashMap<String, String>>,
+                                     query: Query<HashMap<String, String>>,
+                                     req: Request<Body>| async move {
+                                        process_request(req, params, query, handler).await
+                                    },
+                                ),
                             )
                             .into();
                     }
@@ -137,9 +155,13 @@ impl Nylon {
                         svc_router = router
                             .route(
                                 path,
-                                routing::head(|req: Request<Body>| async move {
-                                    process_request(req, handler).await
-                                }),
+                                routing::head(
+                                    |params: Path<HashMap<String, String>>,
+                                     query: Query<HashMap<String, String>>,
+                                     req: Request<Body>| async move {
+                                        process_request(req, params, query, handler).await
+                                    },
+                                ),
                             )
                             .into();
                     }
@@ -147,9 +169,13 @@ impl Nylon {
                         svc_router = router
                             .route(
                                 path,
-                                routing::options(|req: Request<Body>| async move {
-                                    process_request(req, handler).await
-                                }),
+                                routing::options(
+                                    |params: Path<HashMap<String, String>>,
+                                     query: Query<HashMap<String, String>>,
+                                     req: Request<Body>| async move {
+                                        process_request(req, params, query, handler).await
+                                    },
+                                ),
                             )
                             .into();
                     }
@@ -157,17 +183,44 @@ impl Nylon {
                         svc_router = router
                             .route(
                                 path,
-                                routing::trace(|req: Request<Body>| async move {
-                                    process_request(req, handler).await
-                                }),
+                                routing::trace(
+                                    |params: Path<HashMap<String, String>>,
+                                     query: Query<HashMap<String, String>>,
+                                     req: Request<Body>| async move {
+                                        process_request(req, params, query, handler).await
+                                    },
+                                ),
+                            )
+                            .into();
+                    }
+                    Method::Any => {
+                        svc_router = router
+                            .route(
+                                path,
+                                routing::any(
+                                    |params: Path<HashMap<String, String>>,
+                                     query: Query<HashMap<String, String>>,
+                                     req: Request<Body>| async move {
+                                        process_request(req, params, query, handler).await
+                                    },
+                                ),
                             )
                             .into();
                     }
                 };
+                let add_router_time = add_router_time.elapsed().as_micros();
+                let scope = tracing::span!(tracing::Level::INFO, "router",);
+                scope.in_scope(|| {
+                    tracing::info!("{} {} +{}us", method, path, add_router_time);
+                });
             }
         }
 
         let server = axum::serve(listener, svc_router.lock().unwrap().clone());
+        callback.call(
+            Ok(()),
+            napi::threadsafe_function::ThreadsafeFunctionCallMode::NonBlocking,
+        );
         if let Err(e) = server.await {
             tracing::error!("Server error: {}", e);
         }
@@ -189,6 +242,7 @@ impl Nylon {
             Method::Head => "head",
             Method::Options => "options",
             Method::Trace => "trace",
+            Method::Any => "any",
         };
         let mut router = self.router.clone();
         if let Some(method_handler) = router.get_mut(path) {
@@ -276,14 +330,18 @@ impl Nylon {
 
 async fn process_request(
     req: Request<Body>,
+    params: Path<HashMap<String, String>>,
+    query: Query<HashMap<String, String>>,
     handlers: Vec<ThreadsafeFunction<serde_json::Value, Fatal>>,
 ) -> Response<Body> {
     let mut handlers = handlers;
-    let mut url = req.uri().path().to_string();
+    let path = req.uri().path().to_string();
+    let mut url = path.clone();
     if let Some(query) = req.uri().query() {
-        url = format!("{}?{}", url, query);
+        url = format!("{}?{}", path, query);
     }
     let (parts, body) = req.into_parts();
+    let version: String = format!("{:?}", parts.version);
     let entire_body = body
         .into_data_stream()
         .try_fold(Vec::new(), |mut data, chunk| async move {
@@ -296,13 +354,17 @@ async fn process_request(
     let method = parts.method;
     let headers = parts.headers;
     let request = serde_json::json!({
-      "method": method.as_str(),
-      "url": url,
-      "headers": headers
-        .iter()
-        .map(|(k, v)| (k.as_str(), v.to_str().unwrap_or("")))
-        .collect::<serde_json::Value>(),
-      "body": entire_body
+        "method": method.as_str(),
+        "path": path,
+        "url": url,
+        "version": version,
+        "headers": headers
+          .iter()
+          .map(|(k, v)| (k.as_str(), v.to_str().unwrap_or("")))
+          .collect::<serde_json::Value>(),
+        "body": entire_body,
+        "query": query.0,
+        "params": params.0,
     });
     // println!("request: {:#?}", request);
     let response = serde_json::json!({
@@ -326,11 +388,11 @@ async fn process_request(
             Ok(async_body) => match async_body.await {
                 Ok(body) => match serde_json::from_value(body) {
                     Ok(body) => body,
-                    Err(err) => return res_error(err.into()),
+                    Err(err) => return res_error(err.into(), 400),
                 },
-                Err(err) => return res_error(err),
+                Err(err) => return res_error(err, 400),
             },
-            Err(err) => return res_error(err),
+            Err(err) => return res_error(err, 500),
         };
         let (status, headers, body, _, is_end) = js_data.into_parts();
         call_data["response"] = serde_json::json!({
@@ -353,7 +415,7 @@ async fn process_request(
     res.body(Body::from(res_body)).unwrap()
 }
 
-fn res_error(err: Error) -> Response<Body> {
+fn res_error(err: Error, status: u16) -> Response<Body> {
     let err = err.to_string();
     let mut res = Response::builder();
     let error = err
@@ -362,9 +424,9 @@ fn res_error(err: Error) -> Response<Body> {
         .pop()
         .unwrap_or(&err);
     let Ok(err_json) = serde_json::from_str::<serde_json::Value>(error) else {
-        res = res.status(StatusCode::INTERNAL_SERVER_ERROR);
+        res = res.status(StatusCode::from_u16(status).unwrap());
         let err_json = serde_json::json!({
-          "status": 500,
+          "status": status,
           "message": error,
         });
         return res.body(Body::from(err_json.to_string())).unwrap();

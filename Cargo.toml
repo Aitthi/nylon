@@ -20,6 +20,10 @@ tracing-subscriber = "0.3"
 anyhow             = "1"
 axum = "0.7"
 futures-util       = "0.3"
+http               = "1"
+multer             = "2"
+futures            = "0.3"
+bytes              = "1"
 
 [build-dependencies]
 napi-build = "2.0.1"
