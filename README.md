@@ -35,6 +35,33 @@ async function bootstrap() {
         data: {
           name: 'Nylon',
           version: '1.0.0',
+          path: req.path(),
+          query: req.queries(),
+          user_agent: req.header('user-agent')
+        }
+      })
+      return res.next()
+    },
+    async (ctx) => {
+      // throw new Error(HttpException(401, 'Unauthorized'))
+
+      let res = new Response(ctx)
+      res.status(201)
+      return res.end()
+    }
+  ])
+
+  app.get('/:name', [
+    async (ctx) => {
+      let req = new Request(ctx)
+      let res = new Response(ctx)
+      res.json({
+        data: {
+          is_params: true,
+          name: 'Nylon',
+          version: '1.0.0',
+          path: req.path(),
+          query: req.queries(),
           user_agent: req.header('user-agent')
         }
       })
@@ -53,6 +80,11 @@ async function bootstrap() {
     async (ctx) => {
       let req = new Request(ctx)
       let res = new Response(ctx)
+      let multipart = await req.multipart({
+        limit: '5mb', // 10mb, 1kb only support kb, mb // 10 * 1024 * 1024
+        allowed_fields: ['name', 'file'] // optional
+      })
+      console.log('multipart', multipart)
       res.json({
         data: {
           method: req.method(),
