@@ -37,6 +37,7 @@ async function bootstrap() {
       res.json({
         data: {
           is_params: true,
+          params: req.params(),
           name: 'Nylon',
           version: '1.0.0',
           path: req.path(),

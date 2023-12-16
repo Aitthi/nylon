@@ -21,7 +21,7 @@ anyhow             = "1"
 axum = "0.7"
 futures-util       = "0.3"
 http               = "1"
-multer             = "2"
+multer             = "3"
 futures            = "0.3"
 bytes              = "1"
 
